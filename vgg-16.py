@@ -8,6 +8,7 @@ import cv2, numpy as np
 import os, os.path
 import pandas as pd
 from sklearn.cross_validation import train_test_split as sk_split
+from keras.utils import np_utils
 
 def VGG_16(weights_path=None):
     model = Graph()
@@ -121,7 +122,10 @@ if __name__ == '__main__':
     x_data = np.concatenate((clinton_dataset, trump_dataset), axis=0)
     y_data = np.concatenate((clinton_y, trump_y), axis=0)
 
-    X_train, X_test, Y_train, Y_test = sk_split(x_data, y_data, test_size = 0.25, random_state = 42)
+    X_train, X_test, y_train, y_test = sk_split(x_data, y_data, test_size = 0.25, random_state = 42)
+
+    Y_train = np_utils.to_categorical(y_train)
+    Y_test = np_utils.to_categorical(y_test)
 
     model = VGG_16()
     sgd = SGD(lr=0.1, decay=1e-6, momentum=0.9, nesterov=True)
