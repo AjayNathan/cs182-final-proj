@@ -124,8 +124,7 @@ if __name__ == '__main__':
     for i, im in enumerate(x_data):
         x_data[i] = np.expand_dims(im, axis=0)
 
-    for i, im in enumerate(y_data):
-        x_data[i] = np.expand_dims(im, axis=0)
+    print x_data.shape
 
     X_train, X_test, Y_train, Y_test = sk_split(x_data, y_data, test_size = 0.25, random_state = 42)
 
