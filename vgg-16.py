@@ -11,7 +11,7 @@ from sklearn.cross_validation import train_test_split as sk_split
 
 def VGG_16(weights_path=None):
     model = Graph()
-    model.add_input(name='image', input_shape=(1,140,37))
+    model.add_input(name='image', input_shape=(140,37))
     model.add_node(ZeroPadding2D((1,1)), name='zp1', input='image')
     model.add_node(Convolution2D(64, 1, 1, activation='relu'), name='c1', input='zp1')
     model.add_node(ZeroPadding2D((1,1)), name='zp2', input='c1')
@@ -63,7 +63,7 @@ def VGG_16(weights_path=None):
     return model
 
 def loadCharsFromTxt(text, dataset):
-    image = np.zeros((140, 37))
+    image = np.zeros((140, 37, 1))
     words = text.lower().split()
     
     i = 0
@@ -85,7 +85,7 @@ def loadCharsFromTxt(text, dataset):
             index = 0
                              
         if index:
-            image[charCount, index] = 1
+            image[charCount, index][0] = 1
             charCount += 1
                     
     dataset.append(image)
@@ -121,10 +121,11 @@ if __name__ == '__main__':
     x_data = np.concatenate((clinton_dataset, trump_dataset), axis=0)
     y_data = np.concatenate((clinton_y, trump_y), axis=0)
 
-    for i, im in enumerate(x_data):
-        x_data[i] = np.expand_dims(im, axis=0)
+    for i, image in enumerate(x_data):
+        image = image.transpose((2,0,1))
+        image = np.expand_dims(image, axis=0)
+        x_data[i] = image
 
-    print x_data.shape
 
     X_train, X_test, Y_train, Y_test = sk_split(x_data, y_data, test_size = 0.25, random_state = 42)
 
