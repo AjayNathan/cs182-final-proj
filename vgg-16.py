@@ -130,9 +130,9 @@ if __name__ == '__main__':
     Y_test = np_utils.to_categorical(y_test)
 
     model = VGG_16()
-    sgd = SGD(lr=0.1, decay=1e-6, momentum=0.9, nesterov=True)
+    sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
     print "compiling"
-    model.compile(optimizer=sgd, loss={'output': 'categorical_crossentropy'})
+    model.compile(optimizer=SGD, loss={'output': 'categorical_crossentropy'})
     print "compiled"
     model.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
 
