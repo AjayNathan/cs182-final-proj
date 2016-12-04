@@ -9,7 +9,7 @@ import os, os.path
 
 def VGG_16(weights_path=None):
     model = Graph()
-    model.add_input(name='image', input_shape=(3,224,224))
+    model.add_input(name='image', input_shape=(140,36))
     model.add_node(ZeroPadding2D((1,1)), name='zp1', input='image')
     model.add_node(Convolution2D(64, 3, 3, activation='relu'), name='c1', input='zp1')
     model.add_node(ZeroPadding2D((1,1)), name='zp2', input='c1')
@@ -51,7 +51,7 @@ def VGG_16(weights_path=None):
     model.add_node(Dropout(0.5), name='dr1', input='d1')
     model.add_node(Dense(4096, activation='relu'), name='d2', input='dr1')
     model.add_node(Dropout(0.5), name='dr2', input='d2')
-    model.add_node(Dense(1000, activation='softmax'), name='d3', input='dr2')
+    model.add_node(Dense(2, activation='softmax'), name='d3', input='dr2')
 
     model.add_output(name='output', input='d3')
 
@@ -60,39 +60,69 @@ def VGG_16(weights_path=None):
 
     return model
 
+def loadCharsFromTxt(text, dataset):
+    image = np.zeros((140, 37))
+    words = text.lower().split()
+    
+    i = 0
+    while i < len(words): 
+        if "t.co" in words[i]:
+            del words[i]
+        i += 1
+    
+    text = " ".join(words)
+            
+    charCount = 0
+    for char in text:
+        index = None
+        if char.isalpha():
+            index = ord(char) - ord('a') + 1
+        elif char.isdigit():
+            index = ord(char) - ord('0') + 27
+        elif char == " ":
+            index = 0
+                             
+        if index:
+            image[charCount, index] = 1
+            charCount += 1
+                    
+    dataset.append(image)
+
 if __name__ == '__main__':
-    img_dir = 'img'
-    ex = ['jpg', 'jpeg', 'png']
-    image_names = [im for im in os.listdir(img_dir) if any(e in im for e in ex)]
-    num_images = len(image_names)
+    batch_size = 128
+    nb_epoch = 10
 
-    images = range(num_images)
-    for i in xrange(num_images):
-        images[i] = cv2.resize(cv2.imread(img_dir + '/' + image_names[i]), (224, 224)).astype(np.float32)
-        images[i][:,:,0] -= 103.939
-        images[i][:,:,1] -= 116.779
-        images[i][:,:,2] -= 123.68
-        images[i] = images[i].transpose((2,0,1))
-        images[i] = np.expand_dims(images[i], axis=0)
+    training_data = pd.read_csv('datasets/tweets.csv', delimiter=',')
+    testing_data = pd.read_csv('datasets/tweets2.csv', delimiter=',')
 
-    # Test pretrained model
-    model = VGG_16('vgg16_weights_graph.h5')
+    clinton_data_1 = training_data[training_data.handle == "HillaryClinton"]["text"].as_matrix()
+    trump_data_1 = training_data[training_data.handle == "realDonaldTrump"]["text"].as_matrix()
+
+    clinton_data_2 = testing_data[testing_data.handle == "HillaryClinton"]["text"].as_matrix()
+    trump_data_2 = testing_data[testing_data.handle == "realDonaldTrump"]["text"].as_matrix()
+
+    clinton_data = np.concatenate((clinton_data_1, clinton_data_2), axis=0)
+    trump_data = np.concatenate((trump_data_1, trump_data_2), axis=0)
+
+    clinton_dataset = []
+    trump_dataset = []
+
+    for text in clinton_data:
+        loadCharsFromTxt(text, clinton_dataset)
+
+    for text in trump_data:
+        loadCharsFromTxt(text, trump_dataset)
+        
+    clinton_y = np.zeros(len(clinton_dataset))
+    trump_y = np.full(len(trump_dataset), 1)
+
+    x_data = np.concatenate((clinton_dataset, trump_dataset), axis=0)
+    y_data = np.concatenate((clinton_y, trump_y), axis=0)
+
+    X_train, X_test, Y_train, Y_test = sk_split(x_data, y_data, test_size = 0.25, random_state = 42)
+
+    model = VGG_16()
     sgd = SGD(lr=0.1, decay=1e-6, momentum=0.9, nesterov=True)
     model.compile(optimizer=sgd, loss={'output': 'categorical_crossentropy'})
-
-    out = map(lambda img: np.argmax(model.predict({'image': img})['output']) + 1, images)
-    labels = ['']*num_images
-    
-    # go through synset_words.txt and assign labels to each image based on index in out
-    with open('synset_words.txt') as f:
-        for i, line in enumerate(f, 1):
-            indices = [j for j, x in enumerate(out) if x == i]
-            for k in xrange(len(indices)):
-                labels[indices[k]] = line
-
-    # print labels
-    for i in xrange(num_images):
-        if labels[i] != '':
-            print image_names[i] + ': ' + labels[i]
-        else:
-            print image_names[i] + ': ' + 'None found\n'    
+    model.fit(X_train, Y_train, batch_size=batch_size, nb_epoch=nb_epoch,
+          verbose=1, validation_data=(X_test, Y_test))
