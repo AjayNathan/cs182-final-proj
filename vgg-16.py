@@ -45,7 +45,7 @@ def VGG_16(weights_path=None):
     model.add_node(ZeroPadding2D((1,1)), name='zp12', input='c11')
     model.add_node(Convolution2D(512, 3, 3, activation='relu'), name='c12', input='zp12')
     model.add_node(ZeroPadding2D((1,1)), name='zp13', input='c12')
-    model.add_node(Convolution2D(512, 3, 3, activation='relu'), name='c13', input='zp13')
+    model.add_node(Convolution2D(512, 1, 1, activation='relu'), name='c13', input='zp13')
     model.add_node(MaxPooling2D((2,2), strides=(2,2)), name='mp5', input='c13')
 
     model.add_node(Flatten(), name='f1', input='mp5')
