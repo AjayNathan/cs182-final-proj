@@ -7,6 +7,7 @@ from keras.optimizers import SGD
 import cv2, numpy as np
 import os, os.path
 import pandas as pd
+from sklearn.cross_validation import train_test_split as sk_split
 
 def VGG_16(weights_path=None):
     model = Graph()
