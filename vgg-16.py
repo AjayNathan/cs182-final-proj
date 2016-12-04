@@ -11,7 +11,7 @@ from sklearn.cross_validation import train_test_split as sk_split
 
 def VGG_16(weights_path=None):
     model = Graph()
-    model.add_input(name='image', input_shape=(1,140,36))
+    model.add_input(name='image', input_shape=(1,140,37))
     model.add_node(ZeroPadding2D((1,1)), name='zp1', input='image')
     model.add_node(Convolution2D(64, 3, 3, activation='relu'), name='c1', input='zp1')
     model.add_node(ZeroPadding2D((1,1)), name='zp2', input='c1')
@@ -48,8 +48,8 @@ def VGG_16(weights_path=None):
     model.add_node(Convolution2D(512, 3, 3, activation='relu'), name='c13', input='zp13')
     model.add_node(MaxPooling2D((2,2), strides=(2,2)), name='mp5', input='c13')
 
-    # model.add_node(Flatten(), name='f1', input='mp5')
-    model.add_node(Dense(4096, activation='relu'), name='d1', input='mp5')
+    model.add_node(Flatten(), name='f1', input='mp5')
+    model.add_node(Dense(4096, activation='relu'), name='d1', input='f1')
     model.add_node(Dropout(0.5), name='dr1', input='d1')
     model.add_node(Dense(4096, activation='relu'), name='d2', input='dr1')
     model.add_node(Dropout(0.5), name='dr2', input='d2')
