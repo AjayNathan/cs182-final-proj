@@ -87,11 +87,11 @@ def model():
     # model.add_node(MaxPooling2D((3,3), strides=(1,1)), name='mp6', input='c6')
 
     model.add_node(Flatten(), name='f1', input='mp1')
-    model.add_node(Dense(2048, activation='relu'), name='d1', input='f1')
-    model.add_node(Dropout(0.5), name='dr1', input='d1')
+    # model.add_node(Dense(2048, activation='relu'), name='d1', input='f1')
+    # model.add_node(Dropout(0.5), name='dr1', input='d1')
     # model.add_node(Dense(2048, activation='relu'), name='d2', input='dr1')
     # model.add_node(Dropout(0.5), name='dr2', input='d2')
-    model.add_node(Dense(2, activation='softmax'), name='d3', input='dr1')
+    model.add_node(Dense(2, activation='softmax'), name='d3', input='f1')
 
     model.add_output(name='output', input='d3')
 
@@ -158,8 +158,6 @@ if __name__ == '__main__':
 
     X_train, X_test, y_train, y_test = sk_split(x_data, y_data, test_size = 0.25, random_state = 42)
 
-    print X_test[0][0]
-
     Y_train = np_utils.to_categorical(y_train)
     Y_test = np_utils.to_categorical(y_test)
 
@@ -169,7 +167,7 @@ if __name__ == '__main__':
     model.compile(optimizer="adam", loss={'output': 'categorical_crossentropy'})
     print "compiled"
     model.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
-    score = model.evaluate(X_test, Y_test, verbose=0)
+    score = model.evaluate({'image': X_train, 'output': Y_train}, verbose=0)
     print('Test score:', score[0])
     print('Test accuracy:', score[1])
     model.save_weights('my_weights.h5')
