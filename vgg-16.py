@@ -69,7 +69,7 @@ def model():
     #model.add_node(ZeroPadding2D((1,1)), name='zp', input='image')
 
     model.add_node(Convolution2D(512, 1, 1, activation='relu'), name='c1', input='image')
-    model.add_node(MaxPooling2D((3,3), strides=(1,1)), name='mp1', input='c1')
+    model.add_node(MaxPooling2D((2,2), strides=(1,1)), name='mp1', input='c1')
     
     # model.add_node(Convolution2D(512, 3, 3, activation='relu'), name='c2', input='mp1')
     # model.add_node(MaxPooling2D((3,3), strides=(1,1)), name='mp2', input='c2')    
@@ -87,10 +87,10 @@ def model():
     # model.add_node(MaxPooling2D((3,3), strides=(1,1)), name='mp6', input='c6')
 
     model.add_node(Flatten(), name='f1', input='mp1')
-    model.add_node(Dense(2048, activation='relu'), name='d1', input='f1')
-    model.add_node(Dropout(0.5), name='dr1', input='d1')
-    model.add_node(Dense(2048, activation='relu'), name='d2', input='dr1')
-    model.add_node(Dropout(0.5), name='dr2', input='d2')
+    # model.add_node(Dense(2048, activation='relu'), name='d1', input='f1')
+    # model.add_node(Dropout(0.5), name='dr1', input='d1')
+    # model.add_node(Dense(2048, activation='relu'), name='d2', input='dr1')
+    # model.add_node(Dropout(0.5), name='dr2', input='d2')
     model.add_node(Dense(2, activation='softmax'), name='d3', input='dr2')
 
     model.add_output(name='output', input='d3')
