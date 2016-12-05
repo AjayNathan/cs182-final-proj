@@ -12,7 +12,7 @@ from keras.utils import np_utils
 
 def characterModel(weights_path = None):
     model = Graph()
-    model.add_input(name='image', input_shape=(140,37,1))
+    model.add_input(name='image', input_shape=(140,63,1))
 
     # convolution and pooling layer
     model.add_node(Convolution2D(32, 1, 1, activation='relu'), name='c1', input='image')
@@ -32,22 +32,24 @@ def characterModel(weights_path = None):
     return model
 
 def loadCharsFromTxt(text, dataset):
-    image = np.zeros((140, 37, 1))
-    words = text.lower().split()
+    image = np.zeros((140,63,1))
     
+    # strip URLs
+    words = text.split()
     i = 0
     while i < len(words): 
         if "t.co" in words[i]:
             del words[i]
         i += 1
-    
     text = " ".join(words)
             
     charCount = 0
     for char in text:
         index = None
-        if char.isalpha():
+        if char.isalpha() and ord(char) >= ord('a'):
             index = ord(char) - ord('a') + 1
+        elif char.isalpha() and ord(char) >= ord('A'):
+            index = ord(char) - ord('A') + 37
         elif char.isdigit():
             index = ord(char) - ord('0') + 27
         elif char == " ":
@@ -92,7 +94,7 @@ def processData():
 
 if __name__ == '__main__':
     batch_size = 128
-    nb_epoch = 15
+    nb_epoch = 10
 
     # process data
     X_train, X_test, Y_train, Y_test = processData()
@@ -103,8 +105,8 @@ if __name__ == '__main__':
 
     # train model and save weights
     # training = 15 epochs * 67s per epoch on Tesla M40 GPU
-    # model.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
-    # model.save_weights('my_weights.h5')
+    model.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
+    model.save_weights('my_weights.h5')
 
     # evaluate model
     print model.evaluate({'image': X_test, 'output': Y_test}, verbose=0)
