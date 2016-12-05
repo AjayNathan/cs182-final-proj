@@ -80,7 +80,7 @@ def model():
     model.add_node(Convolution2D(1024, 3, 3, activation='relu'), name='c4', input='c3')
     model.add_node(MaxPooling2D((3,3), strides=(1,1)), name='mp4', input='c4')    
     
-    model.add_node(Convolution2D(1024, 3, 3, activation='relu'), name='c5', input='mp4'
+    model.add_node(Convolution2D(1024, 3, 3, activation='relu'), name='c5', input='mp4')
     model.add_node(MaxPooling2D((3,3), strides=(1,1)), name='mp5', input='c4')  
     
     model.add_node(Convolution2D(1024, 3, 3, activation='relu'), name='c6', input='mp5')
