@@ -90,7 +90,7 @@ def processData():
 
 if __name__ == '__main__':
     batch_size = 128
-    nb_epoch = 10
+    nb_epoch = 2
 
     # process data
     X_train, X_test, Y_train, Y_test = processData()
@@ -100,7 +100,7 @@ if __name__ == '__main__':
     model.compile(optimizer="adam", loss={'output': 'categorical_crossentropy'})
 
     # train model and save weights
-    # model.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
+    model.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
     # model.save_weights('my_weights.h5')
 
     # evaluate model
