@@ -68,7 +68,7 @@ def model():
     model.add_input(name='image', input_shape=(140,37,1))
     #model.add_node(ZeroPadding2D((1,1)), name='zp', input='image')
 
-    model.add_node(Convolution2D(512, 3, 3, activation='relu'), name='c1', input='image')
+    model.add_node(Convolution2D(512, 1, 1, activation='relu'), name='c1', input='image')
     model.add_node(MaxPooling2D((3,3), strides=(1,1)), name='mp1', input='c1')
     
     # model.add_node(Convolution2D(512, 3, 3, activation='relu'), name='c2', input='mp1')
