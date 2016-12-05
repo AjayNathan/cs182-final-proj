@@ -65,7 +65,7 @@ def VGG_16(weights_path=None):
 
 def model():
     model = Graph()
-    model.add_input(name='image', input_shape=(140,37))
+    model.add_input(name='image', input_shape=(140,37,1))
     model.add_node(ZeroPadding2D((1,1)), name='zp', input='image')
 
     model.add_node(Convolution2D(1024, 7, 7, activation='relu'), name='c1', input='zp')
@@ -160,7 +160,7 @@ if __name__ == '__main__':
     Y_train = np_utils.to_categorical(y_train)
     Y_test = np_utils.to_categorical(y_test)
 
-    model = VGG_16()
+    model = model()
     sgd = SGD(lr=0.1, decay=1e-6, momentum=0.9, nesterov=True)
     print "compiling"
     model.compile(optimizer="adam", loss={'output': 'categorical_crossentropy'})
