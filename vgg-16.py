@@ -87,11 +87,11 @@ def model():
     # model.add_node(MaxPooling2D((3,3), strides=(1,1)), name='mp6', input='c6')
 
     model.add_node(Flatten(), name='f1', input='mp1')
-    # model.add_node(Dense(2048, activation='relu'), name='d1', input='f1')
-    # model.add_node(Dropout(0.5), name='dr1', input='d1')
+    model.add_node(Dense(2048, activation='relu'), name='d1', input='f1')
+    model.add_node(Dropout(0.5), name='dr1', input='d1')
     # model.add_node(Dense(2048, activation='relu'), name='d2', input='dr1')
     # model.add_node(Dropout(0.5), name='dr2', input='d2')
-    model.add_node(Dense(2, activation='softmax'), name='d3', input='f1')
+    model.add_node(Dense(2, activation='softmax'), name='d3', input='dr1')
 
     model.add_output(name='output', input='d3')
 
@@ -150,7 +150,7 @@ if __name__ == '__main__':
     for text in trump_data:
         loadCharsFromTxt(text, trump_dataset)
         
-    clinton_y = np.zeros(len(clinton_dataset))
+    clinton_y = np.zeros(len(clinton_dataset), dtype=int)
     trump_y = np.full(len(trump_dataset), 1, dtype=int)
 
     x_data = np.concatenate((clinton_dataset, trump_dataset), axis=0)
@@ -168,6 +168,5 @@ if __name__ == '__main__':
     print "compiled"
     model.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
     score = model.evaluate({'image': X_train, 'output': Y_train}, verbose=0)
-    print('Test score:', score[0])
-    print('Test accuracy:', score[1])
+    print score
     model.save_weights('my_weights.h5')
