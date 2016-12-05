@@ -60,11 +60,11 @@ def loadCharsFromTxt(text, dataset):
 def processData():
     data = (pd.read_csv('datasets/tweets.csv', delimiter=','), pd.read_csv('datasets/tweets2.csv', delimiter=','))
 
-    c_data = np.concatenate((data[0][training_data.handle == "HillaryClinton"]["text"].as_matrix(), 
-              data[1][training_data.handle == "HillaryClinton"]["text"].as_matrix()), axis=0)
+    c_data = np.concatenate((data[0][data[0].handle == "HillaryClinton"]["text"].as_matrix(), 
+              data[1][data[0].handle == "HillaryClinton"]["text"].as_matrix()), axis=0)
 
-    t_data = np.concatenate((data[0][training_data.handle == "realDonaldTrump"]["text"].as_matrix(), 
-              data[1][training_data.handle == "realDonaldTrump"]["text"].as_matrix()), axis=0)
+    t_data = np.concatenate((data[0][data[0].handle == "realDonaldTrump"]["text"].as_matrix(), 
+              data[1][data[0].handle == "realDonaldTrump"]["text"].as_matrix()), axis=0)
 
     clinton_tweets = []
     trump_tweets = []
