@@ -80,10 +80,11 @@ def model():
     model.add_node(Convolution2D(1024, 3, 3, activation='relu'), name='c4', input='c3')
     model.add_node(MaxPooling2D((3,3), strides=(1,1)), name='mp4', input='c4')    
     
-    model.add_node(Convolution2D(1024, 3, 3, activation='relu'), name='c5', input='mp4')
+    model.add_node(Convolution2D(1024, 3, 3, activation='relu'), name='c5', input='mp4'
+    model.add_node(MaxPooling2D((3,3), strides=(1,1)), name='mp5', input='c4')  
     
-    model.add_node(Convolution2D(1024, 3, 3, activation='relu'), name='c6', input='c5')
-    model.add_node(MaxPooling2D((3,3), strides=(1,1)), name='mp5', input='c6')
+    model.add_node(Convolution2D(1024, 3, 3, activation='relu'), name='c6', input='mp5')
+    model.add_node(MaxPooling2D((3,3), strides=(1,1)), name='mp6', input='c6')
 
     model.add_node(Flatten(), name='f1', input='mp4')
     model.add_node(Dense(2048, activation='relu'), name='d1', input='f1')
