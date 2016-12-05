@@ -63,7 +63,7 @@ def VGG_16(weights_path=None):
 
     return model
 
-def model():
+def model(weights_path = None):
     model = Graph()
     model.add_input(name='image', input_shape=(140,37,1))
     #model.add_node(ZeroPadding2D((1,1)), name='zp', input='image')
@@ -94,6 +94,9 @@ def model():
     model.add_node(Dense(2, activation='softmax'), name='d3', input='dr1')
 
     model.add_output(name='output', input='d3')
+
+    if weights_path:
+        model.load_weights(weights_path)
 
     return model
 
@@ -161,12 +164,14 @@ if __name__ == '__main__':
     Y_train = np_utils.to_categorical(y_train)
     Y_test = np_utils.to_categorical(y_test)
 
-    model = model()
+    model = model('my_weights.h5')
+
     sgd = SGD(lr=0.1, decay=1e-6, momentum=0.9, nesterov=True)
     print "compiling"
     model.compile(optimizer="adam", loss={'output': 'categorical_crossentropy'})
     print "compiled"
-    model.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
-    score = model.evaluate({'image': X_train, 'output': Y_train}, verbose=0)
+
+    # model.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
+    score = model.evaluate({'image': X_train, 'output': Y_train}, verbose=1)
     print score
-    model.save_weights('my_weights.h5')
+    # model.save_weights('my_weights.h5')
