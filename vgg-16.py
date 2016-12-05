@@ -12,7 +12,7 @@ from keras.utils import np_utils
 
 def characterModel(weights_path = None):
     model = Graph()
-    model.add_input(name='image', input_shape=(140,63,1))
+    model.add_input(name='image', input_shape=(140,37,1))
 
     # convolution and pooling layer
     model.add_node(Convolution2D(32, 1, 1, activation='relu'), name='c1', input='image')
@@ -32,10 +32,10 @@ def characterModel(weights_path = None):
     return model
 
 def loadCharsFromTxt(text, dataset):
-    image = np.zeros((140,63,1))
+    image = np.zeros((140,37,1))
     
     # strip URLs
-    words = text.split()
+    words = text.lower().split()
     i = 0
     while i < len(words): 
         if "t.co" in words[i]:
@@ -48,8 +48,8 @@ def loadCharsFromTxt(text, dataset):
         index = None
         if char.isalpha() and ord(char) >= ord('a'):
             index = ord(char) - ord('a') + 1
-        elif char.isalpha() and ord(char) >= ord('A'):
-            index = ord(char) - ord('A') + 37
+        # elif char.isalpha() and ord(char) >= ord('A'):
+        #     index = ord(char) - ord('A') + 37
         elif char.isdigit():
             index = ord(char) - ord('0') + 27
         elif char == " ":
