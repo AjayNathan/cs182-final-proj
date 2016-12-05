@@ -33,23 +33,23 @@ def VGG_16(weights_path=None):
     model.add_node(Convolution2D(256, 1, 1, activation='relu'), name='c7', input='zp7')
     model.add_node(MaxPooling2D((2,2), strides=(2,2)), name='mp3', input='c7')
 
-    # model.add_node(ZeroPadding2D((1,1)), name='zp8', input='mp3')
-    # model.add_node(Convolution2D(512, 1, 1, activation='relu'), name='c8', input='zp8')
-    # model.add_node(ZeroPadding2D((1,1)), name='zp9', input='c8')
-    # model.add_node(Convolution2D(512, 1, 1, activation='relu'), name='c9', input='zp9')
-    # model.add_node(ZeroPadding2D((1,1)), name='zp10', input='c9')
-    # model.add_node(Convolution2D(512, 1, 1, activation='relu'), name='c10', input='zp10')
-    # model.add_node(MaxPooling2D((2,2), strides=(2,2)), name='mp4', input='c10')
+    model.add_node(ZeroPadding2D((1,1)), name='zp8', input='mp3')
+    model.add_node(Convolution2D(512, 1, 1, activation='relu'), name='c8', input='zp8')
+    model.add_node(ZeroPadding2D((1,1)), name='zp9', input='c8')
+    model.add_node(Convolution2D(512, 1, 1, activation='relu'), name='c9', input='zp9')
+    model.add_node(ZeroPadding2D((1,1)), name='zp10', input='c9')
+    model.add_node(Convolution2D(512, 1, 1, activation='relu'), name='c10', input='zp10')
+    model.add_node(MaxPooling2D((2,2), strides=(2,2)), name='mp4', input='c10')
 
-    # model.add_node(ZeroPadding2D((1,1)), name='zp11', input='mp4')
-    # model.add_node(Convolution2D(512, 1, 1, activation='relu'), name='c11', input='zp11')
-    # model.add_node(ZeroPadding2D((1,1)), name='zp12', input='c11')
-    # model.add_node(Convolution2D(512, 1, 1, activation='relu'), name='c12', input='zp12')
-    # model.add_node(ZeroPadding2D((1,1)), name='zp13', input='c12')
-    # model.add_node(Convolution2D(512, 1, 1, activation='relu'), name='c13', input='zp13')
-    # model.add_node(MaxPooling2D((2,2), strides=(2,2)), name='mp5', input='c13')
+    model.add_node(ZeroPadding2D((1,1)), name='zp11', input='mp4')
+    model.add_node(Convolution2D(512, 1, 1, activation='relu'), name='c11', input='zp11')
+    model.add_node(ZeroPadding2D((1,1)), name='zp12', input='c11')
+    model.add_node(Convolution2D(512, 1, 1, activation='relu'), name='c12', input='zp12')
+    model.add_node(ZeroPadding2D((1,1)), name='zp13', input='c12')
+    model.add_node(Convolution2D(512, 1, 1, activation='relu'), name='c13', input='zp13')
+    model.add_node(MaxPooling2D((2,2), strides=(2,2)), name='mp5', input='c13')
 
-    model.add_node(Flatten(), name='f1', input='mp3')
+    model.add_node(Flatten(), name='f1', input='mp5')
     model.add_node(Dense(4096, activation='relu'), name='d1', input='f1')
     model.add_node(Dropout(0.5), name='dr1', input='d1')
     model.add_node(Dense(4096, activation='relu'), name='d2', input='dr1')
@@ -124,15 +124,15 @@ if __name__ == '__main__':
 
     X_train, X_test, y_train, y_test = sk_split(x_data, y_data, test_size = 0.25, random_state = 42)
 
-    print y_test
+    print X_test
 
-    Y_train = np_utils.to_categorical(y_train)
-    Y_test = np_utils.to_categorical(y_test)
+    # Y_train = np_utils.to_categorical(y_train)
+    # Y_test = np_utils.to_categorical(y_test)
 
-    model = VGG_16()
-    sgd = SGD(lr=0.1, decay=1e-6, momentum=0.9, nesterov=True)
-    print "compiling"
-    model.compile(optimizer=sgd, loss={'output': 'categorical_crossentropy'})
-    print "compiled"
-    model.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
+    # model = VGG_16()
+    # sgd = SGD(lr=0.1, decay=1e-6, momentum=0.9, nesterov=True)
+    # print "compiling"
+    # model.compile(optimizer=sgd, loss={'output': 'categorical_crossentropy'})
+    # print "compiled"
+    # model.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
 
