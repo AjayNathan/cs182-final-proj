@@ -12,7 +12,7 @@ from keras.utils import np_utils
 
 def VGG_16(weights_path=None):
     model = Graph()
-    model.add_input(name='image', input_shape=(140,37))
+    model.add_input(name='image', input_shape=(140,37,1))
     model.add_node(ZeroPadding2D((1,1)), name='zp1', input='image')
     model.add_node(Convolution2D(64, 1, 1, activation='relu'), name='c1', input='zp1')
     model.add_node(ZeroPadding2D((1,1)), name='zp2', input='c1')
@@ -95,7 +95,7 @@ def model():
     return model
 
 def loadCharsFromTxt(text, dataset):
-    image = np.zeros((140, 37))
+    image = np.zeros((140, 37, 1))
     words = text.lower().split()
     
     i = 0
@@ -117,7 +117,7 @@ def loadCharsFromTxt(text, dataset):
             index = 0
                              
         if index:
-            image[charCount, index] = 1
+            image[charCount, index][0] = 1
             charCount += 1
                     
     dataset.append(image)
