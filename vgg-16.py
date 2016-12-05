@@ -151,7 +151,7 @@ if __name__ == '__main__':
         loadCharsFromTxt(text, trump_dataset)
         
     clinton_y = np.zeros(len(clinton_dataset))
-    trump_y = np.full(len(trump_dataset), 1, dtype=np.int)
+    trump_y = np.full(len(trump_dataset), 1, dtype=int)
 
     x_data = np.concatenate((clinton_dataset, trump_dataset), axis=0)
     y_data = np.concatenate((clinton_y, trump_y), axis=0)
