@@ -124,7 +124,7 @@ if __name__ == '__main__':
 
     X_train, X_test, y_train, y_test = sk_split(x_data, y_data, test_size = 0.25, random_state = 42)
 
-    print X_test[0]
+    print X_test[0][0]
 
     # Y_train = np_utils.to_categorical(y_train)
     # Y_test = np_utils.to_categorical(y_test)
