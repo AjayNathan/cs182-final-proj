@@ -1,3 +1,5 @@
+# Important reference: https://arxiv.org/pdf/1509.01626v3.pdf
+
 from keras.models import Graph
 from keras.layers.core import Flatten, Dense, Dropout
 from keras.layers.convolutional import Convolution2D, MaxPooling2D, ZeroPadding2D
@@ -90,7 +92,7 @@ def processData():
 
 if __name__ == '__main__':
     batch_size = 128
-    nb_epoch = 2
+    nb_epoch = 5
 
     # process data
     X_train, X_test, Y_train, Y_test = processData()
@@ -101,7 +103,7 @@ if __name__ == '__main__':
 
     # train model and save weights
     model.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
-    # model.save_weights('my_weights.h5')
+    model.save_weights('my_weights.h5')
 
     # evaluate model
     print model.evaluate({'image': X_train, 'output': Y_train}, verbose=0)
