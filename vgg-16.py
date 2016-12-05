@@ -69,10 +69,10 @@ def model():
     #model.add_node(ZeroPadding2D((1,1)), name='zp', input='image')
 
     model.add_node(Convolution2D(32, 1, 1, activation='relu'), name='c1', input='image')
-    # model.add_node(MaxPooling2D((2,2), strides=(1,1)), name='mp1', input='c1')
+    model.add_node(MaxPooling2D((2,2), strides=(1,1)), name='mp1', input='c1')
     
-    model.add_node(Convolution2D(64, 1, 1, activation='relu'), name='c2', input='c1')
-    model.add_node(MaxPooling2D((3,3), strides=(1,1)), name='mp1', input='c2')    
+    # model.add_node(Convolution2D(64, 1, 1, activation='relu'), name='c2', input='c1')
+    # model.add_node(MaxPooling2D((3,3), strides=(1,1)), name='mp1', input='c2')    
 
     # model.add_node(Convolution2D(512, 3, 3, activation='relu'), name='c3', input='mp2')
     # model.add_node(MaxPooling2D((3,3), strides=(1,1)), name='mp3', input='c3')    
@@ -166,7 +166,7 @@ if __name__ == '__main__':
     model = model()
     sgd = SGD(lr=0.1, decay=1e-6, momentum=0.9, nesterov=True)
     print "compiling"
-    model.compile(optimizer="adam", loss={'output': 'categorical_crossentropy'})
+    model.compile(optimizer=sgd, loss={'output': 'categorical_crossentropy'})
     print "compiled"
     model.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
     score = model.evaluate(X_test, Y_test, verbose=0)
