@@ -88,10 +88,10 @@ def model():
 
     model.add_node(Flatten(), name='f1', input='mp1')
     # model.add_node(Dense(2048, activation='relu'), name='d1', input='f1')
-    # model.add_node(Dropout(0.5), name='dr1', input='d1')
+    model.add_node(Dropout(0.5), name='dr1', input='mp1')
     # model.add_node(Dense(2048, activation='relu'), name='d2', input='dr1')
     # model.add_node(Dropout(0.5), name='dr2', input='d2')
-    model.add_node(Dense(2, activation='softmax'), name='d3', input='f1')
+    model.add_node(Dense(2, activation='softmax'), name='d3', input='dr1')
 
     model.add_output(name='output', input='d3')
 
