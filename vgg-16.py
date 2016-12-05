@@ -103,8 +103,8 @@ if __name__ == '__main__':
 
     # train model and save weights
     # training = 15 epochs * 67s per epoch on Tesla M40 GPU
-    model.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
-    model.save_weights('my_weights.h5')
+    # model.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
+    # model.save_weights('my_weights.h5')
 
     # evaluate model
     print model.evaluate({'image': X_test, 'output': Y_test}, verbose=0)
