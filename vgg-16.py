@@ -12,7 +12,7 @@ from keras.utils import np_utils
 
 def characterModel(weights_path = None):
     model = Graph()
-    model.add_input(name='image', input_shape=(140,37,1))
+    model.add_input(name='image', input_shape=(140,63,1))
 
     # convolution and pooling layer
     model.add_node(Convolution2D(32, 1, 1, activation='relu'), name='c1', input='image')
@@ -32,10 +32,10 @@ def characterModel(weights_path = None):
     return model
 
 def loadCharsFromTxt(text, dataset):
-    image = np.zeros((140,37,1))
+    image = np.zeros((140,63,1))
     
     # strip URLs
-    words = text.lower().split()
+    words = text.split()
     i = 0
     while i < len(words): 
         if "t.co" in words[i]:
@@ -48,8 +48,8 @@ def loadCharsFromTxt(text, dataset):
         index = None
         if char.isalpha() and ord(char) >= ord('a'):
             index = ord(char) - ord('a') + 1
-        # elif char.isalpha() and ord(char) >= ord('A'):
-        #     index = ord(char) - ord('A') + 37
+        elif char.isalpha() and ord(char) >= ord('A'):
+            index = ord(char) - ord('A') + 37
         elif char.isdigit():
             index = ord(char) - ord('0') + 27
         elif char == " ":
@@ -87,9 +87,6 @@ def processData():
 
     X_train, X_test, y_train, y_test = sk_split(x_data, y_data, test_size = 0.25, random_state = 42)
 
-    print X_train.shape
-    print y_train.shape
-
     Y_train = np_utils.to_categorical(y_train)
     Y_test = np_utils.to_categorical(y_test)
 
@@ -103,7 +100,7 @@ if __name__ == '__main__':
     X_train, X_test, Y_train, Y_test = processData()
 
     # load model from weights and compile
-    model = characterModel('my_weights.h5')
+    model = characterModel()
     model.compile(optimizer="adam", loss={'output': 'categorical_crossentropy'})
 
     # train model and save weights
