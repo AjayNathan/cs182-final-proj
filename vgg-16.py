@@ -87,7 +87,7 @@ def processData():
     x_data = np.concatenate((clinton_tweets, trump_tweets), axis=0)
     y_data = np.concatenate((clinton_y, trump_y), axis=0)
 
-    X_train, X_test, y_train, y_test = sk_split(x_data, y_data, test_size=0.05, random_state=41)
+    X_train, X_test, y_train, y_test = sk_split(x_data, y_data, test_size=0.10, random_state=41)
 
     Y_train = np_utils.to_categorical(y_train)
     Y_test = np_utils.to_categorical(y_test)
@@ -96,7 +96,7 @@ def processData():
 
 if __name__ == '__main__':
     batch_size = 128
-    nb_epoch = 10
+    nb_epoch = 3
 
     # process data
     X_train, X_test, Y_train, Y_test, y_test = processData()
