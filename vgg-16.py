@@ -25,10 +25,12 @@ def characterModel(weights_path = None):
     model.add_node(Flatten(), name='f', input='c2')
     model.add_node(Dense(2048, activation='relu'), name='d1', input='f')
     model.add_node(Dropout(0.5), name='dr1', input='d1')
-    model.add_node(Dense(2, activation='softmax'), name='d2', input='dr1')
+    model.add_node(Dense(2048, activation='relu'), name='d2', input='dr1')
+    model.add_node(Dropout(0.5), name='dr2', input='d2')
+    model.add_node(Dense(2, activation='softmax'), name='d3', input='dr2')
 
     # output
-    model.add_output(name='output', input='d2')
+    model.add_output(name='output', input='d3')
 
     # load weights, if there is a path to weights file
     if weights_path:
