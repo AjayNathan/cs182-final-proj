@@ -21,7 +21,7 @@ def characterModel(weights_path = None):
     model.add_node(Convolution2D(4, 1, 1, activation='relu'), name='c1', input='image')
     
     # two fully-connected layers
-    model.add_node(Flatten(), name='f', input='c2')
+    model.add_node(Flatten(), name='f', input='c1')
     model.add_node(Dense(2048, activation='relu'), name='d1', input='f')
     model.add_node(Dropout(0.5), name='dr1', input='d1')
     model.add_node(Dense(2, activation='softmax'), name='d2', input='dr1')
