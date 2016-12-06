@@ -66,13 +66,11 @@ def loadCharsFromTxt(text, dataset):
     dataset.append(image)
 
 def processData():
-    data = (pd.read_csv('datasets/tweets.csv', delimiter=','), pd.read_csv('datasets/tweets2.csv', delimiter=','))
+    data = pd.read_csv('datasets/tweets.csv', delimiter=',')
 
-    c_data = np.concatenate((data[0][data[0].handle == "HillaryClinton"]["text"].as_matrix(), 
-              data[1][data[0].handle == "HillaryClinton"]["text"].as_matrix()), axis=0)
+    c_data = data[data.handle == "HillaryClinton"]["text"].as_matrix()
 
-    t_data = np.concatenate((data[0][data[0].handle == "realDonaldTrump"]["text"].as_matrix(), 
-              data[1][data[0].handle == "realDonaldTrump"]["text"].as_matrix()), axis=0)
+    t_data = data[data.handle == "realDonaldTrump"]["text"].as_matrix()
 
     clinton_tweets = []
     trump_tweets = []
@@ -94,24 +92,24 @@ def processData():
     Y_train = np_utils.to_categorical(y_train)
     Y_test = np_utils.to_categorical(y_test)
 
-    return X_train, X_test, Y_train, Y_test
+    return X_train, X_test, Y_train, Y_test, y_test
 
 if __name__ == '__main__':
     batch_size = 128
     nb_epoch = 3
 
     # process data
-    X_train, X_test, Y_train, Y_test = processData()
+    X_train, X_test, Y_train, Y_test, y_test = processData()
 
     # load model from weights and compile
-    model = characterModel('my_weights3.h5')
+    model = characterModel()
     model.compile(optimizer="adam", loss={'output': 'categorical_crossentropy'})
 
     # train model and save weights
     # training = 3 epochs * 31s per epoch on Tesla M40 GPU
     # testing loss = 0.0982
-    # model.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
-    # model.save_weights('my_weights3.h5')
+    model.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
+    model.save_weights('weights.h5')
 
     predictions = model.predict({"image": np.asarray(X_test)}, verbose=0)
 
