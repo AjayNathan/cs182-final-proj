@@ -101,7 +101,7 @@ if __name__ == '__main__':
     X_train, X_test, Y_train, Y_test = processData()
 
     # load model from weights and compile
-    model = characterModel('my_weights2.h5')
+    model = characterModel()
     model.compile(optimizer="adam", loss={'output': 'categorical_crossentropy'})
 
     # train model and save weights
