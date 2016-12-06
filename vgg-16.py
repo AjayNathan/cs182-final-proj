@@ -22,7 +22,7 @@ def characterModel(weights_path = None):
     
     # two fully-connected layers
     model.add_node(Flatten(), name='f', input='c1')
-    model.add_node(Dense(2048, activation='relu'), name='d1', input='f')
+    model.add_node(Dense(1024, activation='relu'), name='d1', input='f')
     model.add_node(Dropout(0.5), name='dr1', input='d1')
     model.add_node(Dense(2, activation='softmax'), name='d2', input='dr1')
 
@@ -96,7 +96,7 @@ def processData():
 
 if __name__ == '__main__':
     batch_size = 128
-    nb_epoch = 15
+    nb_epoch = 10
 
     # process data
     X_train, X_test, Y_train, Y_test, y_test = processData()
