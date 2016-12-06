@@ -4,7 +4,7 @@ from keras.models import Graph
 from keras.layers.core import Flatten, Dense, Dropout
 from keras.layers.convolutional import Convolution2D, MaxPooling2D, ZeroPadding2D
 from keras.optimizers import SGD
-from keras.regularizers import l2
+from keras.regularizers import l2, activity_l2
 import cv2, numpy as np
 import os, os.path
 import pandas as pd
@@ -18,7 +18,7 @@ def characterModel(weights_path = None):
     model.add_input(name='image', input_shape=(140,63,1))
 
     # convolution layers
-    model.add_node(Convolution2D(32, 1, 1, activation='relu', W_regularizer=l2(1), b_regularizer=l2(0.1)), name='c1', input='image')
+    model.add_node(Convolution2D(32, 1, 1, activation='relu', W_regularizer=l2(1), b_regularizer=l2(0.1), activity_regularizer=activity_l2(0.01)), name='c1', input='image')
     
     # two fully-connected layers
     model.add_node(Flatten(), name='f', input='c1')
@@ -87,7 +87,7 @@ def processData():
     x_data = np.concatenate((clinton_tweets, trump_tweets), axis=0)
     y_data = np.concatenate((clinton_y, trump_y), axis=0)
 
-    X_train, X_test, y_train, y_test = sk_split(x_data, y_data, test_size=0.20, random_state=41)
+    X_train, X_test, y_train, y_test = sk_split(x_data, y_data, test_size=0.10, random_state=41)
 
     Y_train = np_utils.to_categorical(y_train)
     Y_test = np_utils.to_categorical(y_test)
