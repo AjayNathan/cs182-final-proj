@@ -23,7 +23,7 @@ def characterModel(weights_path = None):
     # two fully-connected layers
     model.add_node(Flatten(), name='f', input='c1')
     model.add_node(Dense(2048, activation='relu'), name='d1', input='f')
-    model.add_node(Dropout(0.5), name='dr1', input='d1')
+    model.add_node(Dropout(0.75), name='dr1', input='d1')
     model.add_node(Dense(2, activation='softmax'), name='d2', input='dr1')
 
     # output
