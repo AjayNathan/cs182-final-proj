@@ -102,14 +102,16 @@ if __name__ == '__main__':
     X_train, X_test, Y_train, Y_test, y_test = processData()
 
     # load model from weights and compile
-    model = characterModel()
+    model = characterModel('weights.h5')
     model.compile(optimizer="adam", loss={'output': 'categorical_crossentropy'})
 
     # train model and save weights
     # training = 3 epochs * 31s per epoch on Tesla M40 GPU
     # testing loss = 0.0982
-    model.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
-    model.save_weights('weights.h5')
+    # model.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
+    # model.save_weights('weights.h5')
+
+    print model.evaluate({'image': X_test, 'output': Y_test}, verbose=0)
 
     predictions = model.predict({"image": np.asarray(X_test)}, verbose=0)
 
@@ -117,4 +119,4 @@ if __name__ == '__main__':
     for i, pred in enumerate(predictions["output"]):
         if pred[y_test[i]] < pred[y_test[i] ^ 1]:
             diffs.append(pred[y_test[i] ^ 1] - pred[y_test[i]])
-    print diffs
+    print diffs, len(diffs), len(predictions["output"])
