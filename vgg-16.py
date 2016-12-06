@@ -13,6 +13,8 @@ from keras.utils import np_utils
 
 def characterModel(weights_path = None):
     model = Graph()
+
+    # input
     model.add_input(name='image', input_shape=(140,63,1))
 
     # convolution layers
@@ -24,8 +26,10 @@ def characterModel(weights_path = None):
     model.add_node(Dropout(0.5), name='dr1', input='d1')
     model.add_node(Dense(2, activation='softmax'), name='d2', input='dr1')
 
+    # output
     model.add_output(name='output', input='d2')
 
+    # load weights, if there is a path to weights file
     if weights_path:
         model.load_weights(weights_path)
 
@@ -109,8 +113,13 @@ if __name__ == '__main__':
     # model.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
     # model.save_weights('my_weights3.h5')
 
+    sample_tweets = []
+    sample_tweets.append("The Green Party just dropped its recount suit in Pennsylvania and is losing votes in Wisconsin recount. Just a Stein scam to raise money!")
+    sample_tweets.append("To Barack and Michelle Obama, our country owes you an enormous debt of gratitude. We thank you for your graceful, determined leadership.")
+    sample_tweets.append("Crooked Hillary tried to stop building the wall! Sad!")
+    
     to_predict = []
-    for text in ["The Green Party just dropped its recount suit in Pennsylvania and is losing votes in Wisconsin recount. Just a Stein scam to raise money!", "To Barack and Michelle Obama, our country owes you an enormous debt of gratitude. We thank you for your graceful, determined leadership.", "Crooked Hillary tried to stop building the wall! Sad!"]:
+    for text in [, , ]:
         loadCharsFromTxt(text, to_predict)
 
     print model.predict({"image": np.asarray(to_predict)}, verbose=0)
