@@ -99,7 +99,7 @@ def processData():
 
 if __name__ == '__main__':
     batch_size = 128
-    nb_epoch = 3
+    nb_epoch = 1
 
     # process data
     X_train, X_test, Y_train, Y_test, y_test = processData()
