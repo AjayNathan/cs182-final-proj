@@ -17,11 +17,13 @@ def characterModel(weights_path = None):
 
     # convolution and pooling layers
     model.add_node(Convolution2D(8, 1, 1, activation='relu'), name='c1', input='image')
-    model.add_node(Convolution2D(8, 1, 1, activation='relu'), name='c2', input='c1')
-    model.add_node(MaxPooling2D((2,2), strides=(1,1)), name='mp1', input='c2')
+    model.add_node(MaxPooling2D((2,2), strides=(1,1)), name='mp1', input='c1')
+    model.add_node(Convolution2D(8, 1, 1, activation='relu'), name='c2', input='mp1')
+    model.add_node(MaxPooling2D((2,2), strides=(1,1)), name='mp2', input='c2')
+    model.add_node(Convolution2D(16, 1, 1, activation='relu'), name='c3', input='mp2')
     
     # two fully-connected layers
-    model.add_node(Flatten(), name='f1', input='mp1')
+    model.add_node(Flatten(), name='f1', input='c3')
     model.add_node(Dense(2048, activation='relu'), name='d1', input='f1')
     model.add_node(Dropout(0.5), name='dr1', input='d1')
     model.add_node(Dense(2, activation='softmax'), name='d3', input='dr1')
