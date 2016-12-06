@@ -4,6 +4,7 @@ from keras.models import Graph
 from keras.layers.core import Flatten, Dense, Dropout
 from keras.layers.convolutional import Convolution2D, MaxPooling2D, ZeroPadding2D
 from keras.optimizers import SGD
+from keras.regularizers import l2
 import cv2, numpy as np
 import os, os.path
 import pandas as pd
@@ -20,7 +21,7 @@ def characterModel(weights_path = None):
     
     # two fully-connected layers
     model.add_node(Flatten(), name='f1', input='mp1')
-    model.add_node(Dense(2048, activation='relu'), name='d1', input='f1')
+    model.add_node(Dense(2048, activation='relu', W_regularizer=l2(0.01)), name='d1', input='f1')
     model.add_node(Dropout(0.5), name='dr1', input='d1')
     model.add_node(Dense(2, activation='softmax'), name='d3', input='dr1')
 
