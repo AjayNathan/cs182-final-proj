@@ -16,11 +16,11 @@ def characterModel(weights_path = None):
     model.add_input(name='image', input_shape=(140,63,1))
 
     # convolution layers
-    model.add_node(Convolution2D(32, 1, 1, activation='relu'), name='c1', input='image')
+    model.add_node(Convolution2D(16, 1, 1, activation='relu'), name='c1', input='image')
     
     # two fully-connected layers
     model.add_node(Flatten(), name='f', input='c1')
-    model.add_node(Dense(4096, activation='relu'), name='d1', input='f')
+    model.add_node(Dense(2048, activation='relu'), name='d1', input='f')
     model.add_node(Dropout(0.5), name='dr1', input='d1')
     model.add_node(Dense(2, activation='softmax'), name='d2', input='dr1')
 
@@ -94,20 +94,24 @@ def processData():
 
 if __name__ == '__main__':
     batch_size = 128
-    nb_epoch = 5
+    nb_epoch = 3
 
     # process data
     X_train, X_test, Y_train, Y_test = processData()
 
     # load model from weights and compile
-    model = characterModel()
+    model = characterModel('my_weights3.h5')
     model.compile(optimizer="adam", loss={'output': 'categorical_crossentropy'})
 
     # train model and save weights
-    # training = 7 epochs * 67s per epoch on Tesla M40 GPU
-    model.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
-    model.save_weights('my_weights2.h5')
+    # training = 3 epochs * 31s per epoch on Tesla M40 GPU
+    # testing loss = 0.0982
+    # model.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
+    # model.save_weights('my_weights3.h5')
 
-    # evaluate model
-    print model.evaluate({'image': X_test, 'output': Y_test}, verbose=0)
+    to_predict = []
+    for text in ["Clinton sucks, #hillaryforprison", "Trump is not qualified to be president."]:
+        loadCharsFromTxt(text, to_predict)
+
+    print model.predict({"image": np.asarray(to_predict)}, verbose=0)
 
