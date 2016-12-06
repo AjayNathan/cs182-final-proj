@@ -18,7 +18,7 @@ def characterModel(weights_path = None):
     model.add_input(name='image', input_shape=(140,63,1))
 
     # convolution layers
-    model.add_node(Convolution2D(4, 1, 1, activation='relu'), name='c1', input='image')
+    model.add_node(Convolution2D(8, 1, 1, activation='relu'), name='c1', input='image')
     
     # two fully-connected layers
     model.add_node(Flatten(), name='f', input='c1')
