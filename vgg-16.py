@@ -113,13 +113,10 @@ if __name__ == '__main__':
     # model.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
     # model.save_weights('my_weights3.h5')
 
-    sample_tweets = []
-    sample_tweets.append("The Green Party just dropped its recount suit in Pennsylvania and is losing votes in Wisconsin recount. Just a Stein scam to raise money!")
-    sample_tweets.append("To Barack and Michelle Obama, our country owes you an enormous debt of gratitude. We thank you for your graceful, determined leadership.")
-    sample_tweets.append("Crooked Hillary tried to stop building the wall! Sad!")
-    
-    to_predict = []
-    for text in [, , ]:
-        loadCharsFromTxt(text, to_predict)
+    predictions = model.predict({"image": np.asarray(X_test)}, verbose=0)
 
-    print model.predict({"image": np.asarray(to_predict)}, verbose=0)
+    diffs = []
+    for i, pred in enumerate(predictions["output"]):
+        if pred[y_test[i]] < pred[y_test[i] ^ 1]:
+            diffs.append(pred[y_test[i] ^ 1] - pred[y_test[i]])
+    print diffs
