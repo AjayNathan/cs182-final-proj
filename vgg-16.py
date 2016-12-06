@@ -19,10 +19,11 @@ def characterModel(weights_path = None):
 
     # convolution layers
     model.add_node(Convolution2D(8, 1, 1, activation='relu'), name='c1', input='image')
+    model.add_node(Convolution2D(8, 1, 1, activation='relu'), name='c2', input='c1')
     
     # two fully-connected layers
-    model.add_node(Flatten(), name='f', input='c1')
-    model.add_node(Dense(1024, activation='relu'), name='d1', input='f')
+    model.add_node(Flatten(), name='f', input='c2')
+    model.add_node(Dense(20148, activation='relu'), name='d1', input='f')
     model.add_node(Dropout(0.5), name='dr1', input='d1')
     model.add_node(Dense(2, activation='softmax'), name='d2', input='dr1')
 
