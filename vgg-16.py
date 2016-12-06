@@ -113,5 +113,5 @@ if __name__ == '__main__':
     for text in ["Clinton sucks, #hillaryforprison", "Trump is not qualified to be president."]:
         loadCharsFromTxt(text, to_predict)
 
-    model.predict({"image": to_predict})
+    model.predict({"image": np.asarray(to_predict)})
 
