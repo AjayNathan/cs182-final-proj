@@ -1,98 +1,113 @@
-# model taken from https://gist.github.com/baraldilorenzo/07d7802847aaad0a35d3
+# Important reference: https://arxiv.org/pdf/1509.01626v3.pdf
 
 from keras.models import Graph
 from keras.layers.core import Flatten, Dense, Dropout
 from keras.layers.convolutional import Convolution2D, MaxPooling2D, ZeroPadding2D
 from keras.optimizers import SGD
+from keras.regularizers import l2
 import cv2, numpy as np
 import os, os.path
+import pandas as pd
+from sklearn.cross_validation import train_test_split as sk_split
+from keras.utils import np_utils
 
-def VGG_16(weights_path=None):
+def characterModel(weights_path = None):
     model = Graph()
-    model.add_input(name='image', input_shape=(3,224,224))
-    model.add_node(ZeroPadding2D((1,1)), name='zp1', input='image')
-    model.add_node(Convolution2D(64, 3, 3, activation='relu'), name='c1', input='zp1')
-    model.add_node(ZeroPadding2D((1,1)), name='zp2', input='c1')
-    model.add_node(Convolution2D(64, 3, 3, activation='relu'), name='c2', input='zp2')
-    model.add_node(MaxPooling2D((2,2), strides=(2,2)), name='mp1', input='c2')
+    model.add_input(name='image', input_shape=(140,63,1))
 
-    model.add_node(ZeroPadding2D((1,1)), name='zp3', input='mp1')
-    model.add_node(Convolution2D(128, 3, 3, activation='relu'), name='c3', input='zp3')
-    model.add_node(ZeroPadding2D((1,1)), name='zp4', input='c3')
-    model.add_node(Convolution2D(128, 3, 3, activation='relu'), name='c4', input='zp4')
-    model.add_node(MaxPooling2D((2,2), strides=(2,2)), name='mp2', input='c4')
-
-    model.add_node(ZeroPadding2D((1,1)), name='zp5', input='mp2')
-    model.add_node(Convolution2D(256, 3, 3, activation='relu'), name='c5', input='zp5')
-    model.add_node(ZeroPadding2D((1,1)), name='zp6', input='c5')
-    model.add_node(Convolution2D(256, 3, 3, activation='relu'), name='c6', input='zp6')
-    model.add_node(ZeroPadding2D((1,1)), name='zp7', input='c6')
-    model.add_node(Convolution2D(256, 3, 3, activation='relu'), name='c7', input='zp7')
-    model.add_node(MaxPooling2D((2,2), strides=(2,2)), name='mp3', input='c7')
-
-    model.add_node(ZeroPadding2D((1,1)), name='zp8', input='mp3')
-    model.add_node(Convolution2D(512, 3, 3, activation='relu'), name='c8', input='zp8')
-    model.add_node(ZeroPadding2D((1,1)), name='zp9', input='c8')
-    model.add_node(Convolution2D(512, 3, 3, activation='relu'), name='c9', input='zp9')
-    model.add_node(ZeroPadding2D((1,1)), name='zp10', input='c9')
-    model.add_node(Convolution2D(512, 3, 3, activation='relu'), name='c10', input='zp10')
-    model.add_node(MaxPooling2D((2,2), strides=(2,2)), name='mp4', input='c10')
-
-    model.add_node(ZeroPadding2D((1,1)), name='zp11', input='mp4')
-    model.add_node(Convolution2D(512, 3, 3, activation='relu'), name='c11', input='zp11')
-    model.add_node(ZeroPadding2D((1,1)), name='zp12', input='c11')
-    model.add_node(Convolution2D(512, 3, 3, activation='relu'), name='c12', input='zp12')
-    model.add_node(ZeroPadding2D((1,1)), name='zp13', input='c12')
-    model.add_node(Convolution2D(512, 3, 3, activation='relu'), name='c13', input='zp13')
-    model.add_node(MaxPooling2D((2,2), strides=(2,2)), name='mp5', input='c13')
-
-    model.add_node(Flatten(), name='f1', input='mp5')
-    model.add_node(Dense(4096, activation='relu'), name='d1', input='f1')
+    # convolution layers
+    model.add_node(Convolution2D(32, 1, 1, activation='relu'), name='c1', input='image')
+    
+    # two fully-connected layers
+    model.add_node(Flatten(), name='f', input='c1')
+    model.add_node(Dense(4096, activation='relu'), name='d1', input='f')
     model.add_node(Dropout(0.5), name='dr1', input='d1')
-    model.add_node(Dense(4096, activation='relu'), name='d2', input='dr1')
-    model.add_node(Dropout(0.5), name='dr2', input='d2')
-    model.add_node(Dense(1000, activation='softmax'), name='d3', input='dr2')
+    model.add_node(Dense(2, activation='softmax'), name='d2', input='dr1')
 
-    model.add_output(name='output', input='d3')
+    model.add_output(name='output', input='d2')
 
     if weights_path:
         model.load_weights(weights_path)
 
     return model
 
-if __name__ == '__main__':
-    img_dir = 'img'
-    ex = ['jpg', 'jpeg', 'png']
-    image_names = [im for im in os.listdir(img_dir) if any(e in im for e in ex)]
-    num_images = len(image_names)
-
-    images = range(num_images)
-    for i in xrange(num_images):
-        images[i] = cv2.resize(cv2.imread(img_dir + '/' + image_names[i]), (224, 224)).astype(np.float32)
-        images[i][:,:,0] -= 103.939
-        images[i][:,:,1] -= 116.779
-        images[i][:,:,2] -= 123.68
-        images[i] = images[i].transpose((2,0,1))
-        images[i] = np.expand_dims(images[i], axis=0)
-
-    # Test pretrained model
-    model = VGG_16('vgg16_weights_graph.h5')
-    sgd = SGD(lr=0.1, decay=1e-6, momentum=0.9, nesterov=True)
-    model.compile(optimizer=sgd, loss={'output': 'categorical_crossentropy'})
-
-    out = map(lambda img: np.argmax(model.predict({'image': img})['output']) + 1, images)
-    labels = ['']*num_images
+def loadCharsFromTxt(text, dataset):
+    image = np.zeros((140,63,1))
     
-    # go through synset_words.txt and assign labels to each image based on index in out
-    with open('synset_words.txt') as f:
-        for i, line in enumerate(f, 1):
-            indices = [j for j, x in enumerate(out) if x == i]
-            for k in xrange(len(indices)):
-                labels[indices[k]] = line
+    # strip URLs
+    words = text.split()
+    i = 0
+    while i < len(words): 
+        if "t.co" in words[i]:
+            del words[i]
+        i += 1
+    text = " ".join(words)
+            
+    charCount = 0
+    for char in text:
+        index = None
+        if char.isalpha() and ord(char) >= ord('a'):
+            index = ord(char) - ord('a') + 1
+        elif char.isalpha() and ord(char) >= ord('A'):
+            index = ord(char) - ord('A') + 37
+        elif char.isdigit():
+            index = ord(char) - ord('0') + 27
+        elif char == " ":
+            index = 0
+                             
+        if index:
+            image[charCount, index][0] = 1
+            charCount += 1
+                    
+    dataset.append(image)
 
-    # print labels
-    for i in xrange(num_images):
-        if labels[i] != '':
-            print image_names[i] + ': ' + labels[i]
-        else:
-            print image_names[i] + ': ' + 'None found\n'    
+def processData():
+    data = (pd.read_csv('datasets/tweets.csv', delimiter=','), pd.read_csv('datasets/tweets2.csv', delimiter=','))
+
+    c_data = np.concatenate((data[0][data[0].handle == "HillaryClinton"]["text"].as_matrix(), 
+              data[1][data[0].handle == "HillaryClinton"]["text"].as_matrix()), axis=0)
+
+    t_data = np.concatenate((data[0][data[0].handle == "realDonaldTrump"]["text"].as_matrix(), 
+              data[1][data[0].handle == "realDonaldTrump"]["text"].as_matrix()), axis=0)
+
+    clinton_tweets = []
+    trump_tweets = []
+
+    for text in c_data:
+        loadCharsFromTxt(text, clinton_tweets)
+
+    for text in t_data:
+        loadCharsFromTxt(text, trump_tweets)
+        
+    clinton_y = np.zeros(len(clinton_tweets), dtype=int)
+    trump_y = np.full(len(trump_tweets), 1, dtype=int)
+
+    x_data = np.concatenate((clinton_tweets, trump_tweets), axis=0)
+    y_data = np.concatenate((clinton_y, trump_y), axis=0)
+
+    X_train, X_test, y_train, y_test = sk_split(x_data, y_data, test_size=0.10, random_state=42)
+
+    Y_train = np_utils.to_categorical(y_train)
+    Y_test = np_utils.to_categorical(y_test)
+
+    return X_train, X_test, Y_train, Y_test
+
+if __name__ == '__main__':
+    batch_size = 128
+    nb_epoch = 5
+
+    # process data
+    X_train, X_test, Y_train, Y_test = processData()
+
+    # load model from weights and compile
+    model = characterModel()
+    model.compile(optimizer="adam", loss={'output': 'categorical_crossentropy'})
+
+    # train model and save weights
+    # training = 7 epochs * 67s per epoch on Tesla M40 GPU
+    model.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
+    model.save_weights('my_weights2.h5')
+
+    # evaluate model
+    print model.evaluate({'image': X_test, 'output': Y_test}, verbose=0)
+
