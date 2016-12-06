@@ -96,7 +96,7 @@ def processData():
 
 if __name__ == '__main__':
     batch_size = 128
-    nb_epoch = 10
+    nb_epoch = 1
 
     # process data
     X_train, X_test, Y_train, Y_test, y_test = processData()
@@ -120,3 +120,4 @@ if __name__ == '__main__':
         if pred[y_test[i]] < pred[y_test[i] ^ 1]:
             diffs.append(pred[y_test[i] ^ 1] - pred[y_test[i]])
     print diffs, len(diffs), len(predictions["output"])
+    print np.mean(np.asarray(diffs))
