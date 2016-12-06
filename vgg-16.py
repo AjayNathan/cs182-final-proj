@@ -87,7 +87,7 @@ def processData():
     x_data = np.concatenate((clinton_tweets, trump_tweets), axis=0)
     y_data = np.concatenate((clinton_y, trump_y), axis=0)
 
-    X_train, X_test, y_train, y_test = sk_split(x_data, y_data, test_size=0.10, random_state=42)
+    X_train, X_test, y_train, y_test = sk_split(x_data, y_data, test_size=0.10, random_state=41)
 
     Y_train = np_utils.to_categorical(y_train)
     Y_test = np_utils.to_categorical(y_test)
@@ -96,20 +96,20 @@ def processData():
 
 if __name__ == '__main__':
     batch_size = 128
-    nb_epoch = 10
+    nb_epoch = 15
 
     # process data
     X_train, X_test, Y_train, Y_test, y_test = processData()
 
     # load model from weights and compile
-    model = characterModel('weights.h5')
+    model = characterModel()
     model.compile(optimizer="adam", loss={'output': 'categorical_crossentropy'})
 
     # train model and save weights
     # training = 3 epochs * 31s per epoch on Tesla M40 GPU
     # testing loss = 0.0982
-    # model.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
-    # model.save_weights('weights.h5')
+    model.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
+    model.save_weights('weights.h5')
 
     print model.evaluate({'image': X_test, 'output': Y_test}, verbose=0)
 
