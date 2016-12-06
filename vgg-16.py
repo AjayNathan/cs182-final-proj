@@ -24,7 +24,7 @@ def characterModel(weights_path = None):
     model.add_node(Dropout(0.5), name='dr1', input='d1')
     model.add_node(Dense(2, activation='softmax'), name='d2', input='dr1')
 
-    model.add_output(name='output', input='d3')
+    model.add_output(name='output', input='d2')
 
     if weights_path:
         model.load_weights(weights_path)
