@@ -110,8 +110,7 @@ if __name__ == '__main__':
     # model.save_weights('my_weights3.h5')
 
     to_predict = []
-    for text in ['If the press would cover me accurately & honorably, I would have far less reason to "tweet." Sadly, I dont know if that will ever happen!', "To Barack and Michelle Obama, our country owes you an enormous debt of gratitude. We thank you for your graceful, determined leadership."]:
+    for text in ["The Green Party just dropped its recount suit in Pennsylvania and is losing votes in Wisconsin recount. Just a Stein scam to raise money!", "To Barack and Michelle Obama, our country owes you an enormous debt of gratitude. We thank you for your graceful, determined leadership."]:
         loadCharsFromTxt(text, to_predict)
 
     print model.predict({"image": np.asarray(to_predict)}, verbose=0)
-
