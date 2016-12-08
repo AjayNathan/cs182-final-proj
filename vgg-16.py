@@ -24,10 +24,12 @@ def characterModel(weights_path = None):
     model.add_node(Flatten(), name='f', input='c1')
     model.add_node(Dense(2048, activation='relu'), name='d1', input='f')
     model.add_node(Dropout(0.5), name='dr1', input='d1')
-    model.add_node(Dense(2, activation='softmax'), name='d2', input='dr1')
+    model.add_node(Dense(2048, activation='relu'), name='d2', input='dr1')
+    model.add_node(Dropout(0.5), name='dr2', input='d2')
+    model.add_node(Dense(2, activation='softmax'), name='d3', input='dr2')
 
     # output
-    model.add_output(name='output', input='d2')
+    model.add_output(name='output', input='d3')
 
     # load weights, if there is a path to weights file
     if weights_path:
@@ -109,7 +111,7 @@ if __name__ == '__main__':
     # training = 3 epochs * 31s per epoch on Tesla M40 GPU
     # testing loss = 0.0982
     model.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
-    model.save_weights('weights.h5')
+    model.save_weights('weights2.h5')
 
     print model.evaluate({'image': X_test, 'output': Y_test}, verbose=0)
 
