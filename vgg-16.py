@@ -51,7 +51,7 @@ def characterModel2(weights_path = None):
 
     # fully-connected layers
     model.add_node(Flatten(), name='f', input='mp')
-    model.add_node(Dense(512, activation='relu'), name='d1', input='f')
+    model.add_node(Dense(512, activation='relu', W_constraint=maxnorm(3)), name='d1', input='f')
     model.add_node(Dropout(0.5), name='dr2', input='d1')
     model.add_node(Dense(2, activation='softmax'), name='d2', input='dr2')
 
@@ -173,7 +173,7 @@ if __name__ == '__main__':
     X_train, X_test, Y_train, Y_test, y_test = processData()
 
     # load model from weights and compile
-    model = characterModel3()
+    model = characterModel2()
     sgd = SGD(lr=lr, momentum=0.9, decay=decay, nesterov=False)
     model.compile(optimizer=sgd, loss={'output': 'categorical_crossentropy'}, metrics=['accuracy'])
 
