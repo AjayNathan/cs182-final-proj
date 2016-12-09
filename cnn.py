@@ -170,25 +170,51 @@ if __name__ == '__main__':
     X_train, X_test, Y_train, Y_test, y_test = processData()
 
     # load model from weights and compile
-    model = characterModel2()
+    model1 = characterModel('weights1.h5')
+    model2 = characterModel2('weights2.h5')
+
+    model1.compile(optimizer='adam', loss={'output': 'categorical_crossentropy'}, metrics=['accuracy'])
+
     sgd = SGD(lr=0.01, momentum=0.9, decay=0.005, nesterov=False)
-    model.compile(optimizer=sgd, loss={'output': 'categorical_crossentropy'}, metrics=['accuracy'])
+    model2.compile(optimizer=sgd, loss={'output': 'categorical_crossentropy'}, metrics=['accuracy'])
 
-    print model.summary()
+    print model1.summary()
+    print model2.summary()
 
-    # train model and save weights
-    # training = 3 epochs * 31s per epoch on Tesla M40 GPU
-    # testing loss = 0.0982
-    model.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
-    model.save_weights('weights2.h5')
+    # train models and save weights
+    # training model 1 = 1 epochs * 14s per epoch on Tesla M40 GPU
+    # training model 2 = 8 epochs * 25s per epoch on Tesla M40 GPU
+    # model1.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
+    # model1.save_weights('weights1.h5')
 
-    print model.evaluate({'image': X_test, 'output': Y_test}, verbose=0)
+    # model2.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
+    # model2.save_weights('weights2.h5')
 
-    predictions = model.predict({"image": np.asarray(X_test)}, verbose=0)
+    print model1.evaluate({'image': X_test, 'output': Y_test}, verbose=0)
+    print model2.evaluate({'image': X_test, 'output': Y_test}, verbose=0)
 
-    diffs = []
-    for i, pred in enumerate(predictions["output"]):
+    predictions1 = model1.predict({"image": np.asarray(X_test)}, verbose=0)
+    predictions2 = model2.predict({"image": np.asarray(X_test)}, verbose=0)    
+
+    # calculate diffs in wrong predictions
+    # diffs = []
+    # for i, pred in enumerate(predictions["output"]):
+    #     if pred[y_test[i]] < pred[y_test[i] ^ 1]:
+    #         diffs.append(pred[y_test[i] ^ 1] - pred[y_test[i]])
+    # print diffs, len(diffs), len(predictions["output"])
+    # print np.mean(np.asarray(diffs))
+
+    # get indexes of tweets that are predicted wrong by each model
+    incorrect_guesses1 = []
+    for i, pred in enumerate(predictions1["output"]):
         if pred[y_test[i]] < pred[y_test[i] ^ 1]:
-            diffs.append(pred[y_test[i] ^ 1] - pred[y_test[i]])
-    print diffs, len(diffs), len(predictions["output"])
-    print np.mean(np.asarray(diffs))
+            incorrect_guesses1.append(i)
+
+    incorrect_guesses2 = []
+    for i, pred in enumerate(predictions2["output"]):
+        if pred[y_test[i]] < pred[y_test[i] ^ 1]:
+            incorrect_guesses2.append(i)           
+
+    print incorrect_guesses1
+    print incorrect_guesses2
+    
