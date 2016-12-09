@@ -165,7 +165,7 @@ def processData():
 
 if __name__ == '__main__':
     batch_size = 32
-    nb_epoch = 5
+    nb_epoch = 25
     lr = 0.01
     decay = lr/float(nb_epoch)
 
