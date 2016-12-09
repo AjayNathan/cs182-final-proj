@@ -175,7 +175,7 @@ if __name__ == '__main__':
     # load model from weights and compile
     model = characterModel2()
     sgd = SGD(lr=lr, momentum=0.9, decay=decay, nesterov=False)
-    model.compile(optimizer=sgd, loss={'output': 'categorical_crossentropy'}, metrics=['accuracy'])
+    model.compile(optimizer="adam", loss={'output': 'categorical_crossentropy'}, metrics=['accuracy'])
 
     print model.summary()
 
