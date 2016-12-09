@@ -208,7 +208,7 @@ if __name__ == '__main__':
     # pick guess for model that is more certain
     # count number of incorrect guesses
     num_incorrect = 0
-    for i, pred1, pred2 in enumerate(zip(predictions1["output"], predictions2["output"])):
+    for i, (pred1, pred2) in enumerate(zip(predictions1["output"], predictions2["output"])):
         if (pred1[0] - pred1[1]) * (pred2[0] - pred2[1]) < 0:
             if abs(pred1[0] - pred1[1]) > abs(pred2[0] - pred2[1]):
                 if pred1[0] > pred1[1]:
