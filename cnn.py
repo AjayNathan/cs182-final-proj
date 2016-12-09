@@ -164,15 +164,15 @@ def processData():
 
 if __name__ == '__main__':
     batch_size = 32
-    nb_epoch = 1
+    nb_epoch = 8
 
     # process data
     X_train, X_test, Y_train, Y_test, y_test = processData()
 
     # load model from weights and compile
-    model = characterModel()
+    model = characterModel2()
     sgd = SGD(lr=0.01, momentum=0.9, decay=0.005, nesterov=False)
-    model.compile(optimizer="adam", loss={'output': 'categorical_crossentropy'}, metrics=['accuracy'])
+    model.compile(optimizer=sgd, loss={'output': 'categorical_crossentropy'}, metrics=['accuracy'])
 
     print model.summary()
 
@@ -180,7 +180,7 @@ if __name__ == '__main__':
     # training = 3 epochs * 31s per epoch on Tesla M40 GPU
     # testing loss = 0.0982
     model.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
-    model.save_weights('weights1.h5')
+    model.save_weights('weights2.h5')
 
     print model.evaluate({'image': X_test, 'output': Y_test}, verbose=0)
 
