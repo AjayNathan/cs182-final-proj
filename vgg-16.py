@@ -81,13 +81,13 @@ def characterModel3(weights_path = None):
     model.add_node(Convolution2D(64, 3, 3, border_mode='same', activation='relu'), name='c4', input='dr2')
     model.add_node(MaxPooling2D((2,2)), name='mp2', input='c4')
 
-    model.add_node(Convolution2D(128, 3, 3, border_mode='same', activation='relu'), name='c5', input='mp2')
-    model.add_node(Dropout(0.2), name='dr3', input='c5')
-    model.add_node(Convolution2D(128, 3, 3, border_mode='same', activation='relu'), name='c6', input='dr3')
-    model.add_node(MaxPooling2D((2,2)), name='mp3', input='c6')
+    # model.add_node(Convolution2D(128, 3, 3, border_mode='same', activation='relu'), name='c5', input='mp2')
+    # model.add_node(Dropout(0.2), name='dr3', input='c5')
+    # model.add_node(Convolution2D(128, 3, 3, border_mode='same', activation='relu'), name='c6', input='dr3')
+    # model.add_node(MaxPooling2D((2,2)), name='mp3', input='c6')
 
     # fully-connected layers
-    model.add_node(Flatten(), name='f', input='mp3')
+    model.add_node(Flatten(), name='f', input='mp2')
     model.add_node(Dropout(0.2), name='dr4', input='f')
     model.add_node(Dense(1024, activation='relu', W_constraint=maxnorm(3)), name='d1', input='dr4')
     model.add_node(Dropout(0.2), name='dr5', input='d1')
@@ -173,9 +173,9 @@ if __name__ == '__main__':
     X_train, X_test, Y_train, Y_test, y_test = processData()
 
     # load model from weights and compile
-    model = characterModel2()
+    model = characterModel3()
     sgd = SGD(lr=lr, momentum=0.9, decay=decay, nesterov=False)
-    model.compile(optimizer="adam", loss={'output': 'categorical_crossentropy'}, metrics=['accuracy'])
+    model.compile(optimizer=sgd, loss={'output': 'categorical_crossentropy'}, metrics=['accuracy'])
 
     print model.summary()
 
