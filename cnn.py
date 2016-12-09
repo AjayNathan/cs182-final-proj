@@ -204,17 +204,27 @@ if __name__ == '__main__':
     # print diffs, len(diffs), len(predictions["output"])
     # print np.mean(np.asarray(diffs))
 
-    # get indexes of tweets that are predicted wrong by each model
-    incorrect_guesses1 = []
-    for i, pred in enumerate(predictions1["output"]):
-        if pred[y_test[i]] < pred[y_test[i] ^ 1]:
-            incorrect_guesses1.append(i)
+    # get indexes of tweets that are predicted differently
+    # pick guess for model that is more certain
+    # count number of incorrect guesses
+    num_incorrect = 0
+    for i, pred1, pred2 in enumerate(zip(predictions1["output"], predictions2["output"])):
+        if (pred1[0] - pred1[1]) * (pred2[0] - pred2[1]) < 0:
+            if abs(pred1[0] - pred1[1]) > abs(pred2[0] - pred2[1]):
+                if pred1[0] > pred1[1]:
+                    if y_test[i] != 0:
+                        num_incorrect += 1
+                else:
+                    if y_test[i] != 1:
+                        num_incorrect += 1
+            else:
+                if pred2[0] > pred2[1]:
+                    if y_test[i] != 0:
+                        num_incorrect += 1
+                else:
+                    if y_test[i] != 1:
+                        num_incorrect += 1
+        elif pred1[y_test[i]] < pred1[y_test[i] ^ 1]:
+            num_incorrect += 1           
 
-    incorrect_guesses2 = []
-    for i, pred in enumerate(predictions2["output"]):
-        if pred[y_test[i]] < pred[y_test[i] ^ 1]:
-            incorrect_guesses2.append(i)           
-
-    print incorrect_guesses1
-    print incorrect_guesses2
-    
+    print num_incorrect
