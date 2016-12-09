@@ -165,16 +165,16 @@ def processData():
 if __name__ == '__main__':
     batch_size = 32
     nb_epoch = 5
-    lr = 0.1
+    lr = 0.01
     decay = lr/float(nb_epoch)
 
     # process data
     X_train, X_test, Y_train, Y_test, y_test = processData()
 
     # load model from weights and compile
-    model = characterModel2()
+    model = characterModel()
     sgd = SGD(lr=lr, momentum=0.9, decay=decay, nesterov=False)
-    model.compile(optimizer="adam", loss={'output': 'categorical_crossentropy'}, metrics=['accuracy'])
+    model.compile(optimizer=sgd, loss={'output': 'categorical_crossentropy'}, metrics=['accuracy'])
 
     print model.summary()
 
