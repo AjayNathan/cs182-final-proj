@@ -20,10 +20,9 @@ def characterModel(weights_path = None):
 
     # convolution layers
     model.add_node(Convolution2D(16, 1, 1, activation='relu'), name='c1', input='image')
-    model.add_node(Dropout(0.2), name='dr1', input='c1')
 
     # two fully-connected layers
-    model.add_node(Flatten(), name='f', input='dr1')
+    model.add_node(Flatten(), name='f', input='c1')
     model.add_node(Dense(512, activation='relu'), name='d1', input='f')
     model.add_node(Dropout(0.5), name='dr2', input='d1')
     model.add_node(Dense(2, activation='softmax'), name='d2', input='dr2')
@@ -166,15 +165,13 @@ def processData():
 if __name__ == '__main__':
     batch_size = 32
     nb_epoch = 25
-    lr = 0.01
-    decay = lr/float(nb_epoch)
 
     # process data
     X_train, X_test, Y_train, Y_test, y_test = processData()
 
     # load model from weights and compile
     model = characterModel2()
-    sgd = SGD(lr=lr, momentum=0.9, decay=decay, nesterov=False)
+    sgd = SGD(lr=0.01, momentum=0.9, decay=0.005, nesterov=False)
     model.compile(optimizer=sgd, loss={'output': 'categorical_crossentropy'}, metrics=['accuracy'])
 
     print model.summary()
