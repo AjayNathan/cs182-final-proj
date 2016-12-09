@@ -95,7 +95,7 @@ def characterModel3(weights_path = None):
     model.add_node(Dense(2, activation='softmax'), name='d3', input='dr6')
 
     # output
-    model.add_output(name='output', input='d2')
+    model.add_output(name='output', input='d3')
 
     # load weights, if there is a path to weights file
     if weights_path:
