@@ -70,19 +70,19 @@ def characterModel3(weights_path = None):
     model.add_input(name='image', input_shape=(140,63,1))
 
     # convolution layers
-    model.add_node(Convolution2D(32, 3, 3, border_mode='same', activation='relu') name='c1', input='image')
+    model.add_node(Convolution2D(32, 3, 3, border_mode='same', activation='relu'), name='c1', input='image')
     model.add_node(Dropout(0.2), name='dr1', input='c1')
-    model.add_node(Convolution2D(32, 3, 3, border_mode='same', activation='relu') name='c2', input='dr1')
+    model.add_node(Convolution2D(32, 3, 3, border_mode='same', activation='relu'), name='c2', input='dr1')
     model.add_node(MaxPooling2D((2,2)), name='mp1', input='c2')
 
-    model.add_node(Convolution2D(64, 3, 3, border_mode='same', activation='relu') name='c3', input='mp1')
+    model.add_node(Convolution2D(64, 3, 3, border_mode='same', activation='relu'), name='c3', input='mp1')
     model.add_node(Dropout(0.2), name='dr2', input='c3')
-    model.add_node(Convolution2D(64, 3, 3, border_mode='same', activation='relu') name='c4', input='dr2')
+    model.add_node(Convolution2D(64, 3, 3, border_mode='same', activation='relu'), name='c4', input='dr2')
     model.add_node(MaxPooling2D((2,2)), name='mp2', input='c4')
 
-    model.add_node(Convolution2D(128, 3, 3, border_mode='same', activation='relu') name='c5', input='mp2')
+    model.add_node(Convolution2D(128, 3, 3, border_mode='same', activation='relu'), name='c5', input='mp2')
     model.add_node(Dropout(0.2), name='dr3', input='c5')
-    model.add_node(Convolution2D(128, 3, 3, border_mode='same', activation='relu') name='c6', input='dr3')
+    model.add_node(Convolution2D(128, 3, 3, border_mode='same', activation='relu'), name='c6', input='dr3')
     model.add_node(MaxPooling2D((2,2)), name='mp3', input='c6')
 
     # fully-connected layers
