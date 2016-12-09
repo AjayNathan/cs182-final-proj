@@ -74,12 +74,12 @@ def characterModel3(weights_path = None):
     model.add_node(Convolution2D(32, 3, 3, border_mode='same', activation='relu'), name='c1', input='image')
     model.add_node(Dropout(0.2), name='dr1', input='c1')
     model.add_node(Convolution2D(32, 3, 3, border_mode='same', activation='relu'), name='c2', input='dr1')
-    model.add_node(MaxPooling2D((2,2)), name='mp1', input='c2')
+    # model.add_node(MaxPooling2D((2,2)), name='mp1', input='c2')
 
-    model.add_node(Convolution2D(64, 3, 3, border_mode='same', activation='relu'), name='c3', input='mp1')
+    model.add_node(Convolution2D(64, 3, 3, border_mode='same', activation='relu'), name='c3', input='c2')
     model.add_node(Dropout(0.2), name='dr2', input='c3')
     model.add_node(Convolution2D(64, 3, 3, border_mode='same', activation='relu'), name='c4', input='dr2')
-    model.add_node(MaxPooling2D((2,2)), name='mp2', input='c4')
+    # model.add_node(MaxPooling2D((2,2)), name='mp2', input='c4')
 
     # model.add_node(Convolution2D(128, 3, 3, border_mode='same', activation='relu'), name='c5', input='mp2')
     # model.add_node(Dropout(0.2), name='dr3', input='c5')
@@ -87,7 +87,7 @@ def characterModel3(weights_path = None):
     # model.add_node(MaxPooling2D((2,2)), name='mp3', input='c6')
 
     # fully-connected layers
-    model.add_node(Flatten(), name='f', input='mp2')
+    model.add_node(Flatten(), name='f', input='c4')
     model.add_node(Dropout(0.2), name='dr4', input='f')
     model.add_node(Dense(1024, activation='relu', W_constraint=maxnorm(3)), name='d1', input='dr4')
     model.add_node(Dropout(0.2), name='dr5', input='d1')
