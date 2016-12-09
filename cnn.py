@@ -170,7 +170,7 @@ if __name__ == '__main__':
     X_train, X_test, Y_train, Y_test, y_test = processData()
 
     # load model from weights and compile
-    model = characterModel2()
+    model = characterModel()
     sgd = SGD(lr=0.01, momentum=0.9, decay=0.005, nesterov=False)
     model.compile(optimizer=sgd, loss={'output': 'categorical_crossentropy'}, metrics=['accuracy'])
 
