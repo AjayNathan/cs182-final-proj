@@ -132,7 +132,7 @@ if __name__ == '__main__':
 
     # load model from weights and compile
     model = characterModel2()
-    model.compile(optimizer="adam", loss={'output': 'categorical_crossentropy'}, metrics=['accuracy'])
+    model.compile(optimizer="sgd", loss={'output': 'categorical_crossentropy'}, metrics=['accuracy'])
 
     print model.summary()
 
