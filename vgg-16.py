@@ -63,6 +63,45 @@ def characterModel2(weights_path = None):
 
     return model
 
+def characterModel3(weights_path = None):
+    model = Graph()
+
+    # input
+    model.add_input(name='image', input_shape=(140,63,1))
+
+    # convolution layers
+    model.add_node(Convolution2D(32, 3, 3, border_mode='same', activation='relu') name='c1', input='image')
+    model.add_node(Dropout(0.2), name='dr1', input='c1')
+    model.add_node(Convolution2D(32, 3, 3, border_mode='same', activation='relu') name='c2', input='dr1')
+    model.add_node(MaxPooling2D((2,2)), name='mp1', input='c2')
+
+    model.add_node(Convolution2D(64, 3, 3, border_mode='same', activation='relu') name='c3', input='mp1')
+    model.add_node(Dropout(0.2), name='dr2', input='c3')
+    model.add_node(Convolution2D(64, 3, 3, border_mode='same', activation='relu') name='c4', input='dr2')
+    model.add_node(MaxPooling2D((2,2)), name='mp2', input='c4')
+
+    model.add_node(Convolution2D(128, 3, 3, border_mode='same', activation='relu') name='c5', input='mp2')
+    model.add_node(Dropout(0.2), name='dr3', input='c5')
+    model.add_node(Convolution2D(128, 3, 3, border_mode='same', activation='relu') name='c6', input='dr3')
+    model.add_node(MaxPooling2D((2,2)), name='mp3', input='c6')
+
+    # fully-connected layers
+    model.add_node(Flatten(), name='f', input='mp3')
+    model.add_node(Dropout(0.2), name='dr4', input='f')
+    model.add_node(Dense(1024, activation='relu'), name='d1', input='dr4')
+    model.add_node(Dropout(0.2), name='dr5', input='d1')
+    model.add_node(Dense(512, activation='relu'), name='d2', input='dr5')
+    model.add_node(Dropout(0.2), name='dr6', input='d2')
+    model.add_node(Dense(2, activation='softmax'), name='d3', input='dr6')
+
+    # output
+    model.add_output(name='output', input='d2')
+
+    # load weights, if there is a path to weights file
+    if weights_path:
+        model.load_weights(weights_path)
+
+    return model
 
 def loadCharsFromTxt(text, dataset):
     image = np.zeros((140,63,1))
@@ -125,7 +164,7 @@ def processData():
 
 if __name__ == '__main__':
     batch_size = 32
-    nb_epoch = 25
+    nb_epoch = 5
     lr = 0.01
     decay = lr/float(nb_epoch)
 
@@ -133,7 +172,7 @@ if __name__ == '__main__':
     X_train, X_test, Y_train, Y_test, y_test = processData()
 
     # load model from weights and compile
-    model = characterModel2()
+    model = characterModel3()
     sgd = SGD(lr=lr, momentum=0.9, decay=decay, nesterov=False)
     model.compile(optimizer=sgd, loss={'output': 'categorical_crossentropy'}, metrics=['accuracy'])
 
@@ -143,7 +182,7 @@ if __name__ == '__main__':
     # training = 3 epochs * 31s per epoch on Tesla M40 GPU
     # testing loss = 0.0982
     model.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
-    model.save_weights('weights3.h5')
+    model.save_weights('weights4.h5')
 
     print model.evaluate({'image': X_test, 'output': Y_test}, verbose=0)
 
