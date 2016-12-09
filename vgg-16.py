@@ -5,6 +5,7 @@ from keras.layers.core import Flatten, Dense, Dropout
 from keras.layers.convolutional import Convolution2D, MaxPooling2D, ZeroPadding2D
 from keras.optimizers import SGD
 from keras.regularizers import l2, activity_l2
+from keras.constraints import maxnorm
 import cv2, numpy as np
 import os, os.path
 import pandas as pd
@@ -24,18 +25,44 @@ def characterModel(weights_path = None):
     model.add_node(Flatten(), name='f', input='c1')
     model.add_node(Dense(2048, activation='relu'), name='d1', input='f')
     model.add_node(Dropout(0.5), name='dr1', input='d1')
-    model.add_node(Dense(2048, activation='relu'), name='d2', input='dr1')
-    model.add_node(Dropout(0.5), name='dr2', input='d2')
-    model.add_node(Dense(2, activation='softmax'), name='d3', input='dr2')
+    model.add_node(Dense(2, activation='softmax'), name='d2', input='dr1')
 
     # output
-    model.add_output(name='output', input='d3')
+    model.add_output(name='output', input='d2')
 
     # load weights, if there is a path to weights file
     if weights_path:
         model.load_weights(weights_path)
 
     return model
+
+def characterModel2(weights_path = None):
+    model = Graph()
+
+    # input
+    model.add_input(name='image', input_shape=(140,63,1))
+
+    # convolution layers
+    model.add_node(Convolution2D(32, 3, 3, border_mode='same', activation='relu', W_constraint=maxnorm(3)), name='c1', input='image')
+    model.add_node(Dropout(0.2), name='dr1', input='c1')
+    model.add_node(Convolution2D(32, 3, 3, border_mode='same', activation='relu', W_constraint=maxnorm(3)), name='c2', input='dr1')
+    model.add_node(MaxPooling2D((2,2)), name='mp', input='c2')
+
+    # fully-connected layers
+    model.add_node(Flatten(), name='f', input='mp')
+    model.add_node(Dense(512, activation='relu'), name='d1', input='f')
+    model.add_node(Dropout(0.5), name='dr2', input='d1')
+    model.add_node(Dense(2, activation='softmax'), name='d2', input='dr2')
+
+    # output
+    model.add_output(name='output', input='d2')
+
+    # load weights, if there is a path to weights file
+    if weights_path:
+        model.load_weights(weights_path)
+
+    return model
+
 
 def loadCharsFromTxt(text, dataset):
     image = np.zeros((140,63,1))
@@ -97,21 +124,23 @@ def processData():
     return X_train, X_test, Y_train, Y_test, y_test
 
 if __name__ == '__main__':
-    batch_size = 128
+    batch_size = 32
     nb_epoch = 5
 
     # process data
     X_train, X_test, Y_train, Y_test, y_test = processData()
 
     # load model from weights and compile
-    model = characterModel()
-    model.compile(optimizer="adam", loss={'output': 'categorical_crossentropy'})
+    model = characterModel2()
+    model.compile(optimizer="adam", loss={'output': 'categorical_crossentropy'}, metrics=['accuracy'])
+
+    print model.summary()
 
     # train model and save weights
     # training = 3 epochs * 31s per epoch on Tesla M40 GPU
     # testing loss = 0.0982
     model.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
-    model.save_weights('weights2.h5')
+    model.save_weights('weights3.h5')
 
     print model.evaluate({'image': X_test, 'output': Y_test}, verbose=0)
 
