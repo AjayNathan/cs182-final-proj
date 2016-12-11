@@ -16,6 +16,7 @@ def characterModel(weights_path = None):
     # convolution layers
     model.add(Convolution2D(16, 1, 1, input_shape=(140,63,1)))
     model.add(Activation('relu'))
+    model.add(MaxPooling2D((2,2)))
 
     # two fully-connected layers
     model.add(Flatten())
