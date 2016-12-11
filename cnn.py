@@ -138,10 +138,10 @@ if __name__ == '__main__':
     # train models and save weights
     # training model 1 = 1 epochs * 14s per epoch on Tesla M40 GPU, overfits after 1 epoch
     # training model 2 = 8 epochs * 25s per epoch on Tesla M40 GPU, starts overfitting after ~8 epochs
-    model1.fit(X_train, Y_train, batch_size=32, nb_epoch=1, verbose=1, validation_data=(X_test, Y_test))
+    model1.fit(X_train, Y_train, batch_size=128, nb_epoch=3, verbose=1, validation_data=(X_test, Y_test))
     model1.save_weights('weights1.h5')
 
-    model2.fit(X_train, Y_train, batch_size=32, nb_epoch=8, verbose=1, validation_data=(X_test, Y_test))
+    model2.fit(X_train, Y_train, batch_size=128, nb_epoch=8, verbose=1, validation_data=(X_test, Y_test))
     model2.save_weights('weights2.h5')
 
     print model1.evaluate(X_test, Y_test, verbose=0)
