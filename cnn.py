@@ -1,8 +1,8 @@
 # Important reference: https://arxiv.org/pdf/1509.01626v3.pdf
 
-from keras.models import Graph
-from keras.layers.core import Flatten, Dense, Dropout
-from keras.layers.convolutional import Convolution2D, MaxPooling2D, ZeroPadding2D
+from keras.models import Sequential
+from keras.layers import Flatten, Dense, Dropout, Activation
+from keras.layers import Convolution2D, MaxPooling2D, ZeroPadding2D
 from keras.optimizers import SGD
 from keras.regularizers import l2, activity_l2
 from keras.constraints import maxnorm
@@ -13,22 +13,20 @@ from sklearn.cross_validation import train_test_split as sk_split
 from keras.utils import np_utils
 
 def characterModel(weights_path = None):
-    model = Graph()
-
-    # input
-    model.add_input(name='image', input_shape=(140,63,1))
+    """smaller CNN"""
+    model = Sequential()
 
     # convolution layers
-    model.add_node(Convolution2D(16, 1, 1, activation='relu'), name='c1', input='image')
+    model.add(Convolution2D(16, 1, 1, input_shape=(140,63,1)))
+    model.add(Activation('relu'))
 
     # two fully-connected layers
-    model.add_node(Flatten(), name='f', input='c1')
-    model.add_node(Dense(512, activation='relu'), name='d1', input='f')
-    model.add_node(Dropout(0.5), name='dr2', input='d1')
-    model.add_node(Dense(2, activation='softmax'), name='d2', input='dr2')
-
-    # output
-    model.add_output(name='output', input='d2')
+    model.add(Flatten())
+    model.add(Dense(512))
+    model.add(Activation('relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(2))
+    model.add(Activation('softmax'))
 
     # load weights, if there is a path to weights file
     if weights_path:
@@ -37,65 +35,24 @@ def characterModel(weights_path = None):
     return model
 
 def characterModel2(weights_path = None):
-    model = Graph()
-
-    # input
-    model.add_input(name='image', input_shape=(140,63,1))
+    """deeper CNN"""
+    model = Sequential()
 
     # convolution layers
-    model.add_node(Convolution2D(32, 3, 3, border_mode='same', activation='relu', W_constraint=maxnorm(3)), name='c1', input='image')
-    model.add_node(Dropout(0.2), name='dr1', input='c1')
-    model.add_node(Convolution2D(32, 3, 3, border_mode='same', activation='relu', W_constraint=maxnorm(3)), name='c2', input='dr1')
-    model.add_node(MaxPooling2D((2,2)), name='mp', input='c2')
+    model.add_node(Convolution2D(32, 3, 3, border_mode='same', W_constraint=maxnorm(3), input_shape=(140,63,1)))
+    model.add(Activation('relu'))
+    model.add(Dropout(0.2))
+    model.add(Convolution2D(32, 3, 3, border_mode='same', W_constraint=maxnorm(3)))
+    model.add(Activation('relu'))
+    model.add(MaxPooling2D((2,2)))
 
     # fully-connected layers
-    model.add_node(Flatten(), name='f', input='mp')
-    model.add_node(Dense(512, activation='relu', W_constraint=maxnorm(3)), name='d1', input='f')
-    model.add_node(Dropout(0.5), name='dr2', input='d1')
-    model.add_node(Dense(2, activation='softmax'), name='d2', input='dr2')
-
-    # output
-    model.add_output(name='output', input='d2')
-
-    # load weights, if there is a path to weights file
-    if weights_path:
-        model.load_weights(weights_path)
-
-    return model
-
-def characterModel3(weights_path = None):
-    model = Graph()
-
-    # input
-    model.add_input(name='image', input_shape=(140,63,1))
-
-    # convolution layers
-    model.add_node(Convolution2D(32, 3, 3, border_mode='same', activation='relu'), name='c1', input='image')
-    model.add_node(Dropout(0.2), name='dr1', input='c1')
-    model.add_node(Convolution2D(32, 3, 3, border_mode='same', activation='relu'), name='c2', input='dr1')
-    # model.add_node(MaxPooling2D((2,2)), name='mp1', input='c2')
-
-    model.add_node(Convolution2D(64, 3, 3, border_mode='same', activation='relu'), name='c3', input='c2')
-    model.add_node(Dropout(0.2), name='dr2', input='c3')
-    model.add_node(Convolution2D(64, 3, 3, border_mode='same', activation='relu'), name='c4', input='dr2')
-    # model.add_node(MaxPooling2D((2,2)), name='mp2', input='c4')
-
-    # model.add_node(Convolution2D(128, 3, 3, border_mode='same', activation='relu'), name='c5', input='mp2')
-    # model.add_node(Dropout(0.2), name='dr3', input='c5')
-    # model.add_node(Convolution2D(128, 3, 3, border_mode='same', activation='relu'), name='c6', input='dr3')
-    # model.add_node(MaxPooling2D((2,2)), name='mp3', input='c6')
-
-    # fully-connected layers
-    model.add_node(Flatten(), name='f', input='c4')
-    model.add_node(Dropout(0.2), name='dr4', input='f')
-    model.add_node(Dense(1024, activation='relu', W_constraint=maxnorm(3)), name='d1', input='dr4')
-    model.add_node(Dropout(0.2), name='dr5', input='d1')
-    model.add_node(Dense(512, activation='relu', W_constraint=maxnorm(3)), name='d2', input='dr5')
-    model.add_node(Dropout(0.2), name='dr6', input='d2')
-    model.add_node(Dense(2, activation='softmax'), name='d3', input='dr6')
-
-    # output
-    model.add_output(name='output', input='d3')
+    model.add_node(Flatten())
+    model.add_node(Dense(512, W_constraint=maxnorm(3)))
+    model.add(Activation('relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(2))
+    model.add(Activation('softmax'))
 
     # load weights, if there is a path to weights file
     if weights_path:
@@ -104,6 +61,7 @@ def characterModel3(weights_path = None):
     return model
 
 def loadCharsFromTxt(text, dataset):
+    """converts text to image-like matrix representation (input to CNN)"""
     image = np.zeros((140,63,1))
     
     # strip URLs
@@ -134,6 +92,7 @@ def loadCharsFromTxt(text, dataset):
     dataset.append(image)
 
 def processData():
+    """generates training and testing splits"""
     data = pd.read_csv('datasets/tweets.csv', delimiter=',')
 
     c_data = data[data.handle == "HillaryClinton"]["text"].as_matrix()
@@ -155,19 +114,16 @@ def processData():
     x_data = np.concatenate((clinton_tweets, trump_tweets), axis=0)
     y_data = np.concatenate((clinton_y, trump_y), axis=0)
 
-    X_train, X_test, y_train, y_test = sk_split(x_data, y_data, test_size=0.10, random_state=40)
+    X_train, X_test, y_train, y_test = sk_split(x_data, y_data, test_size=0.10, random_state=42)
 
     Y_train = np_utils.to_categorical(y_train)
     Y_test = np_utils.to_categorical(y_test)
 
-    return X_train, X_test, Y_train, Y_test, y_test
+    return X_train, X_test, Y_train, Y_test
 
 if __name__ == '__main__':
-    batch_size = 32
-    nb_epoch = 8
-
     # process data
-    X_train, X_test, Y_train, Y_test, y_test = processData()
+    X_train, X_test, Y_train, Y_test = processData()
 
     # load model from weights and compile
     model1 = characterModel()
@@ -182,12 +138,12 @@ if __name__ == '__main__':
     print model2.summary()
 
     # train models and save weights
-    # training model 1 = 1 epochs * 14s per epoch on Tesla M40 GPU
-    # training model 2 = 8 epochs * 25s per epoch on Tesla M40 GPU
-    model1.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=1, verbose=1, validation_data={'image': X_test, 'output': Y_test})
+    # training model 1 = 1 epochs * 14s per epoch on Tesla M40 GPU, overfits after 1 epoch
+    # training model 2 = 8 epochs * 25s per epoch on Tesla M40 GPU, starts overfitting after ~8 epochs
+    model1.fit(X_train, Y_train, batch_size=32, nb_epoch=1, verbose=1, validation_data=(X_test, Y_test))
     model1.save_weights('weights1.h5')
 
-    model2.fit({'image': X_train, 'output': Y_train}, batch_size=batch_size, nb_epoch=nb_epoch, verbose=1, validation_data={'image': X_test, 'output': Y_test})
+    model2.fit(X_train, Y_train, batch_size=32, nb_epoch=8, verbose=1, validation_data=(X_test, Y_test))
     model2.save_weights('weights2.h5')
 
     print model1.evaluate({'image': X_test, 'output': Y_test}, verbose=0)
@@ -195,37 +151,3 @@ if __name__ == '__main__':
 
     predictions1 = model1.predict({"image": np.asarray(X_test)}, verbose=0)
     predictions2 = model2.predict({"image": np.asarray(X_test)}, verbose=0)    
-
-    # calculate diffs in wrong predictions
-    # diffs = []
-    # for i, pred in enumerate(predictions["output"]):
-    #     if pred[y_test[i]] < pred[y_test[i] ^ 1]:
-    #         diffs.append(pred[y_test[i] ^ 1] - pred[y_test[i]])
-    # print diffs, len(diffs), len(predictions["output"])
-    # print np.mean(np.asarray(diffs))
-
-    # get indexes of tweets that are predicted differently
-    # pick guess for model that is more certain
-    # count number of incorrect guesses
-    num_incorrect = 0
-    for i, (pred1, pred2) in enumerate(zip(predictions1["output"], predictions2["output"])):
-        if (pred1[0] - pred1[1]) * (pred2[0] - pred2[1]) < 0:
-            if abs(pred1[0] - pred1[1]) > abs(pred2[0] - pred2[1]):
-                if pred1[0] > pred1[1]:
-                    if y_test[i] != 0:
-                        num_incorrect += 1
-                else:
-                    if y_test[i] != 1:
-                        num_incorrect += 1
-            else:
-                if pred2[0] > pred2[1]:
-                    if y_test[i] != 0:
-                        num_incorrect += 1
-                else:
-                    if y_test[i] != 1:
-                        num_incorrect += 1
-        elif pred1[y_test[i]] < pred1[y_test[i] ^ 1]:
-            num_incorrect += 1           
-
-    print num_incorrect
-    print float(num_incorrect)/float(len(y_test))
