@@ -1,16 +1,13 @@
 # Important reference: https://arxiv.org/pdf/1509.01626v3.pdf
 
 from keras.models import Sequential
-from keras.layers import Flatten, Dense, Dropout, Activation
-from keras.layers import Convolution2D, MaxPooling2D, ZeroPadding2D
+from keras.layers import Flatten, Dense, Dropout, Activation, Convolution2D, MaxPooling2D
 from keras.optimizers import SGD
-from keras.regularizers import l2, activity_l2
 from keras.constraints import maxnorm
-import cv2, numpy as np
-import os, os.path
+from keras.utils import np_utils
+import numpy as np
 import pandas as pd
 from sklearn.cross_validation import train_test_split as sk_split
-from keras.utils import np_utils
 
 def characterModel(weights_path = None):
     """smaller CNN"""
@@ -39,7 +36,7 @@ def characterModel2(weights_path = None):
     model = Sequential()
 
     # convolution layers
-    model.add_node(Convolution2D(32, 3, 3, border_mode='same', W_constraint=maxnorm(3), input_shape=(140,63,1)))
+    model.add(Convolution2D(32, 3, 3, border_mode='same', W_constraint=maxnorm(3), input_shape=(140,63,1)))
     model.add(Activation('relu'))
     model.add(Dropout(0.2))
     model.add(Convolution2D(32, 3, 3, border_mode='same', W_constraint=maxnorm(3)))
