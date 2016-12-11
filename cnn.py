@@ -44,8 +44,8 @@ def characterModel2(weights_path = None):
     model.add(MaxPooling2D((2,2)))
 
     # fully-connected layers
-    model.add_node(Flatten())
-    model.add_node(Dense(512, W_constraint=maxnorm(3)))
+    model.add(Flatten())
+    model.add(Dense(512, W_constraint=maxnorm(3)))
     model.add(Activation('relu'))
     model.add(Dropout(0.5))
     model.add(Dense(2))
