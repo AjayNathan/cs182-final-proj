@@ -143,8 +143,5 @@ if __name__ == '__main__':
     model2.fit(X_train, Y_train, batch_size=32, nb_epoch=8, verbose=1, validation_data=(X_test, Y_test))
     model2.save_weights('weights2.h5')
 
-    print model1.evaluate({'image': X_test, 'output': Y_test}, verbose=0)
-    print model2.evaluate({'image': X_test, 'output': Y_test}, verbose=0)
-
-    predictions1 = model1.predict({"image": np.asarray(X_test)}, verbose=0)
-    predictions2 = model2.predict({"image": np.asarray(X_test)}, verbose=0)    
+    print model1.evaluate(X_test, Y_test, verbose=0)
+    print model2.evaluate(X_test, Y_test, verbose=0)  
