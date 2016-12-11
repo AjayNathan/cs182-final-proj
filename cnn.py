@@ -126,10 +126,10 @@ if __name__ == '__main__':
     model1 = characterModel()
     model2 = characterModel2()
 
-    model1.compile(optimizer='adam', loss={'output': 'categorical_crossentropy'}, metrics=['accuracy'])
+    model1.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
     sgd = SGD(lr=0.01, momentum=0.9, decay=0.005, nesterov=False)
-    model2.compile(optimizer=sgd, loss={'output': 'categorical_crossentropy'}, metrics=['accuracy'])
+    model2.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
 
     print model1.summary()
     print model2.summary()
